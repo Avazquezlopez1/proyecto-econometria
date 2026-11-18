@@ -35,7 +35,7 @@ SEMILLA = int(equipo["SEMILLA"])
 EQUIPO = equipo["EQUIPO"]
 OBJETIVO = equipo["OBJETIVO"]           # Carry
 ACTIVOS = equipo["ACTIVOS"].split(",")  # los 12 sectores del portafolio
-INTEGRANTES = ["Alvaro Vázquez López (0267889)", "Alvaro Fernandez Lozano (0273215)"]
+INTEGRANTES = ["Alvaro Vázquez López (0267889)", "Alvaro Fernandez Lozano (0273215)", "Diego Diez Gutierrez (0274883)", "Javier Martínez Manzo (0273320)"]
 
 # mismos datos y misma división que en el notebook: 75 % entrenamiento, 25 % prueba
 FACTORES = ["Mkt-RF", "SMB", "HML", "RF"]

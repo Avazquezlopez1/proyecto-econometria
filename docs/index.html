@@ -1,0 +1,505 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Proyecto ECO515 · Equipo CFA Challenge</title>
+  <!-- Plotly.js: la librería que dibuja las gráficas interactivas -->
+  <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+/* Estilos del dashboard */
+
+/* colores que se usan en toda la página */
+:root {
+  --azul: #b91c1c;
+  --azul-oscuro: #7f1d1d;
+  --azul-claro: #fdeeee;
+  --fondo: #faf6f6;
+  --borde: #eadede;
+  --texto: #1d2330;
+  --suave: #5b6475;
+  --sombra: 0 1px 2px rgba(16, 24, 40, 0.05), 0 4px 16px rgba(16, 24, 40, 0.06);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 64px;
+}
+
+body {
+  font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  margin: 0;
+  color: var(--texto);
+  background: var(--fondo);
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* encabezado con degradado, título y equipo */
+header {
+  background: linear-gradient(135deg, var(--azul-oscuro) 0%, var(--azul) 60%, #dc2626 100%);
+  color: #fff;
+  padding: 48px 20px 40px;
+}
+
+header .dentro,
+main {
+  max-width: 1080px;
+  margin: 0 auto;
+}
+
+header h1 {
+  margin: 0 0 14px;
+  font-size: 2.1rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+
+header p {
+  margin: 6px 0;
+  opacity: 0.9;
+  font-size: 0.98rem;
+}
+
+header p:first-of-type {
+  opacity: 1;
+  font-size: 1.05rem;
+}
+
+/* menú que se queda pegado arriba al bajar */
+nav {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--borde);
+  box-shadow: 0 2px 8px rgba(16, 24, 40, 0.04);
+}
+
+nav .dentro {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 10px 20px;
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+nav a {
+  color: var(--suave);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.9rem;
+  padding: 6px 14px;
+  border-radius: 999px;
+  transition: background 0.15s, color 0.15s;
+}
+
+nav a:hover {
+  background: var(--azul-claro);
+  color: var(--azul);
+}
+
+main {
+  padding: 12px 20px 48px;
+}
+
+/* cada parte del proyecto va en una tarjeta blanca */
+section {
+  background: #fff;
+  border: 1px solid var(--borde);
+  border-radius: 14px;
+  box-shadow: var(--sombra);
+  padding: 30px 34px;
+  margin: 28px 0;
+}
+
+h2 {
+  color: var(--azul-oscuro);
+  margin: 0 0 14px;
+  padding-bottom: 12px;
+  font-size: 1.6rem;
+  letter-spacing: -0.01em;
+  border-bottom: 3px solid var(--azul-claro);
+}
+
+h3 {
+  margin: 36px 0 8px;
+  font-size: 1.12rem;
+  color: var(--azul);
+}
+
+h4 {
+  margin: 26px 0 4px;
+  font-size: 0.98rem;
+  color: var(--texto);
+}
+
+.grafica {
+  width: 100%;
+  margin-top: 8px;
+}
+
+.instruccion {
+  color: var(--suave);
+  font-size: 0.92rem;
+  font-style: italic;
+  margin-bottom: 0;
+}
+
+/* cuadro azul de "Qué concluir" */
+.conclusion {
+  background: var(--azul-claro);
+  border-left: 4px solid var(--azul);
+  padding: 12px 16px;
+  border-radius: 0 8px 8px 0;
+  font-size: 0.97rem;
+}
+
+/* cuadro amarillo de las conclusiones */
+.caja {
+  background: #fffaf0;
+  border: 1px solid #f0d58c;
+  border-left: 5px solid #e0a800;
+  border-radius: 10px;
+  padding: 8px 22px;
+  margin-top: 14px;
+}
+
+.nota {
+  color: var(--suave);
+  font-size: 0.88rem;
+}
+
+/* tablas: si no caben, se recorren de lado */
+.tabla {
+  overflow-x: auto;
+  margin: 12px 0;
+  border: 1px solid var(--borde);
+  border-radius: 10px;
+}
+
+table {
+  border-collapse: collapse;
+  font-size: 0.86rem;
+  min-width: 100%;
+  font-variant-numeric: tabular-nums;
+}
+
+th,
+td {
+  border-bottom: 1px solid var(--borde);
+  padding: 9px 14px;
+  text-align: right;
+  white-space: nowrap;
+}
+
+th {
+  background: var(--azul-oscuro);
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.82rem;
+}
+
+tbody tr:nth-child(even) td {
+  background: #fcf8f8;
+}
+
+tbody tr:hover td {
+  background: var(--azul-claro);
+}
+
+tbody tr:last-child td {
+  border-bottom: none;
+}
+
+td.izq {
+  text-align: left;
+  font-weight: 500;
+}
+
+/* renglón resaltado en amarillo */
+tr.resalta td,
+tr.resalta:hover td {
+  background: #fff3c4;
+  font-weight: 700;
+}
+
+code {
+  background: var(--azul-claro);
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-size: 0.88em;
+}
+
+footer {
+  color: var(--suave);
+  font-size: 0.85rem;
+  text-align: center;
+  padding: 24px 16px 40px;
+  border-top: 1px solid var(--borde);
+  max-width: 1080px;
+  margin: 0 auto;
+}
+
+footer a {
+  color: var(--azul);
+}
+
+/* en celular: letra más chica y menos espacio */
+@media (max-width: 600px) {
+  header {
+    padding: 32px 16px 28px;
+  }
+
+  header h1 {
+    font-size: 1.5rem;
+  }
+
+  main {
+    padding: 8px 10px 32px;
+  }
+
+  section {
+    padding: 18px 14px;
+    border-radius: 10px;
+  }
+
+  h2 {
+    font-size: 1.3rem;
+  }
+}
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="dentro">
+    <h1>De la regresión regularizada al portafolio óptimo</h1>
+    <p><b>Equipo CFA Challenge</b> · Alvaro Vázquez López (0267889) · Alvaro Fernandez Lozano (0273215)</p>
+    <p>Fundamentos de Econometría (ECO515), Universidad Panamericana, Otoño 2026 · Semilla 267889 ·
+      Sector objetivo: <b>Carry</b> · 12 activos del portafolio</p>
+  </div>
+</header>
+
+<nav>
+  <div class="dentro">
+    <a href="#p1">1. Regularización</a>
+    <a href="#p2">2. Multicolinealidad</a>
+    <a href="#p3">3. PCA</a>
+    <a href="#p4">4. Markowitz</a>
+    <a href="#conclusion">Conclusión</a>
+  </div>
+</nav>
+
+<main>
+
+<section id="p1">
+<h2>Parte 1. Regularización</h2>
+<p>Usamos los rendimientos de los otros 29 sectores para replicar el sector objetivo. Comparamos MCO con 3 métodos
+que castigan coeficientes grandes: Ridge, Lasso y Elastic Net.</p>
+<h3>1.1 ¿Qué hace el castigo lambda?</h3>
+<div class='grafica' id='g0'></div>
+<p class='conclusion'><b>Qué concluir:</b> al aumentar lambda, los coeficientes se hacen más pequeños y se acercan a cero. Un castigo moderado mejora un poco la predicción fuera de muestra, pero un castigo excesivo la empeora, porque el modelo deja de usar información útil.</p>
+<h3>1.2 Dentro vs. fuera de muestra según los datos disponibles</h3>
+<p class="instruccion">Elige cuántos meses de historia se usan para entrenar.</p>
+<div class='grafica' id='g1'></div>
+<p class='conclusion'><b>Qué concluir:</b> dentro de muestra MCO siempre tiene el menor error, pero fuera de muestra no. Con 36 meses, su error de prueba es de 13.64 %, contra 5.14 % de Ridge. Con 240 meses, los cuatro métodos predicen casi igual, por lo que la regularización ayuda sobre todo cuando hay pocos datos.</p>
+<h3>1.3 Monte Carlo: ¿cuándo conviene regularizar?</h3>
+<p class="instruccion">8 escenarios × 4 métodos × 20 repeticiones; el eje está en escala log.</p>
+<div class='grafica' id='g2'></div>
+<p class='conclusion'><b>Qué concluir:</b> con pocos datos (40 observaciones y 30 variables) los tres métodos regularizados reducen mucho los dos errores frente a MCO. Con muchos datos casi no ayudan a predecir, pero con alta colinealidad sí ayudan a estimar beta.</p>
+<h3>1.4 Tabla MANOVA</h3>
+<p>El renglón resaltado es el estadístico principal (traza de Pillai), porque es el más robusto cuando no se
+cumple la igualdad de covarianzas y el diseño está balanceado.</p>
+<div class='tabla'>
+  <table>
+    <thead><tr><th>Efecto · estadístico</th><th>Valor</th><th>gl num.</th><th>gl den.</th><th>F</th><th>p</th><th>eta² multiv.</th></tr></thead>
+    <tbody>
+      <tr><td class='izq'>metodo · Wilks</td><td>0.2844</td><td>6</td><td>1214.0</td><td>177.10</td><td>7.14e-162</td><td>0.467</td></tr>
+      <tr class='resalta'><td class='izq'>metodo · Pillai</td><td>0.7182</td><td>6</td><td>1216.0</td><td>113.57</td><td>7.97e-114</td><td></td></tr>
+      <tr><td class='izq'>metodo · Hotelling-Lawley</td><td>2.5076</td><td>6</td><td>807.6</td><td>253.48</td><td>7.13e-182</td><td></td></tr>
+      <tr><td class='izq'>metodo · Roy</td><td>2.5039</td><td>3</td><td>608.0</td><td>507.47</td><td>4.75e-165</td><td></td></tr>
+      <tr><td class='izq'>escenario · Wilks</td><td>0.0224</td><td>14</td><td>1214.0</td><td>492.91</td><td>0.00e+00</td><td>0.850</td></tr>
+      <tr class='resalta'><td class='izq'>escenario · Pillai</td><td>1.6343</td><td>14</td><td>1216.0</td><td>388.17</td><td>0.00e+00</td><td></td></tr>
+      <tr><td class='izq'>escenario · Hotelling-Lawley</td><td>14.3389</td><td>14</td><td>967.8</td><td>620.93</td><td>0.00e+00</td><td></td></tr>
+      <tr><td class='izq'>escenario · Roy</td><td>11.8663</td><td>7</td><td>608.0</td><td>1030.67</td><td>0.00e+00</td><td></td></tr>
+      <tr><td class='izq'>metodo x escenario · Wilks</td><td>0.2516</td><td>42</td><td>1214.0</td><td>28.72</td><td>3.24e-151</td><td>0.498</td></tr>
+      <tr class='resalta'><td class='izq'>metodo x escenario · Pillai</td><td>0.9223</td><td>42</td><td>1216.0</td><td>24.78</td><td>2.91e-133</td><td></td></tr>
+      <tr><td class='izq'>metodo x escenario · Hotelling-Lawley</td><td>2.2832</td><td>42</td><td>1108.0</td><td>32.95</td><td>3.58e-164</td><td></td></tr>
+      <tr><td class='izq'>metodo x escenario · Roy</td><td>1.9239</td><td>21</td><td>608.0</td><td>55.70</td><td>1.69e-126</td><td></td></tr>
+    </tbody>
+  </table>
+</div>
+<div class="caja"><b>Conclusión de la Parte 1.</b> La interacción método × escenario es significativa
+(Pillai = 0.922, p &lt; 0.001) y tiene un efecto grande (η² = 0.498), es decir, el
+mejor método depende del caso. Con muchos datos y baja colinealidad, MCO es suficiente; con alta colinealidad o pocos
+datos, conviene regularizar. Para replicar Carry, el método más adecuado es Lasso: usa solo 12 de los 29
+sectores y tiene un error de prueba 1.1 % menor que MCO.</div>
+</section>
+
+<section id="p2">
+<h2>Parte 2. Multicolinealidad</h2>
+<p>Longley explica el empleo total de EE. UU. con 6 variables que crecen juntas en el tiempo. Un VIF mayor que 10
+(línea punteada) indica multicolinealidad grave.</p>
+<div class='grafica' id='g3'></div>
+<p class='conclusion'><b>Qué concluir:</b> con todas las variables el VIF de GNP llega a 1,788.5. Quitar GNP y POP lo baja a 76.9 y transformar a PIB real per cápita lo baja a 3.1: solo transformar elimina el problema.</p>
+<div class='grafica' id='g4'></div>
+<p class='conclusion'><b>Qué concluir:</b> para predecir gana Quitar GNP y POP (error LOO de 398.5, 6 % menos que MCO). Transformar predice peor (586.2), pero es el mejor para interpretar cada coeficiente. PCR y PLS son los peores aquí.</p>
+<div class='tabla'>
+  <table>
+    <thead><tr><th></th><th>RMSE LOO</th><th>VIF máximo</th><th>Condición de X</th></tr></thead>
+    <tbody>
+      <tr><td class='izq'>MCO completo</td><td>424.8</td><td>1,788.5</td><td>110.5</td></tr>
+      <tr><td class='izq'>Quitar GNP y POP</td><td>398.5</td><td>76.9</td><td>19.8</td></tr>
+      <tr><td class='izq'>Transformar</td><td>586.2</td><td>3.1</td><td>3.2</td></tr>
+      <tr><td class='izq'>PCR</td><td>1,075.6</td><td></td><td></td></tr>
+      <tr><td class='izq'>PLS</td><td>899.4</td><td></td><td></td></tr>
+      <tr><td class='izq'>Ridge</td><td>439.6</td><td></td><td></td></tr>
+    </tbody>
+  </table>
+</div>
+<p class="nota">PCR, PLS y Ridge no tienen VIF porque no estiman coeficientes de MCO sobre las variables originales.</p>
+</section>
+
+<section id="p3">
+<h2>Parte 3. Componentes principales</h2>
+<h3>3.1 Método de la potencia con la matriz Σ del equipo (λ = 8, 3, 1.5, 0.5, 0.2)</h3>
+<div class='grafica' id='g5'></div>
+<p class='conclusion'><b>Qué concluir:</b> en pocas iteraciones, v<sub>t</sub> coincide con a₁. El ángulo entre ambos se reduce en cada paso según la razón λ₂/λ₁ = 0.375, por lo que el método converge rápido.</p>
+<div class='grafica' id='g6'></div>
+<p class='conclusion'><b>Qué concluir:</b> la línea observada sigue a la teórica: el error cae de forma geométrica hasta llegar a la precisión de la computadora.</p>
+<h3>3.2 PCA de los 30 sectores</h3>
+<p class="instruccion">Elige el componente para ver qué sectores pesan más en él.</p>
+<div class='grafica' id='g7'></div>
+<p class='conclusion'><b>Qué concluir:</b> en el primer componente todos los sectores tienen carga del mismo signo: es el factor de mercado. Explica 57.2 % de la varianza y su correlación con el mercado es 0.949. Ese riesgo común no se elimina diversificando entre sectores.</p>
+</section>
+
+<section id="p4">
+<h2>Parte 4. Markowitz</h2>
+<p>Activos: Autos, Beer, Books, Chems, Coal, FabPr, Food, Hshld, Meals, Other, Smoke, Trans.</p>
+<h3>4.1 Frontera eficiente (tasa libre de riesgo)</h3>
+<p class="instruccion">Mueve r<sub>f</sub>: la línea del mercado de capitales gira y el portafolio tangente se desplaza por la frontera.</p>
+<div class='grafica' id='g8'></div>
+<p class='conclusion'><b>Qué concluir:</b> la GMV tiene una volatilidad de 10.6 %, menor que la de cualquier sector. Con la r<sub>f</sub> real (1.62 %) la tangente promete un Sharpe de 1.19, pero solo con ventas en corto grandes. Al acercar r<sub>f</sub> a A/C = 8.43 % la tangente se va cada vez más arriba y más apalancada.</p>
+<h3>4.2 ¿Cómo les fue fuera de muestra?</h3>
+<div class='grafica' id='g9'></div>
+<p class='conclusion'><b>Qué concluir:</b> con pesos fijos el portafolio 1/N tiene el mejor Sharpe (0.636). Al reestimar cada año la tangente muestral sube a 0.96, pero con 49 % de volatilidad y una caída máxima de 53 %: un riesgo que ningún fondo aceptaría.</p>
+<h3>4.3 Dentro vs. fuera de muestra</h3>
+<div class='grafica' id='g10'></div>
+<p class='conclusion'><b>Qué concluir:</b> todas las estrategias optimizadas prometen más de lo que dan. La tangente muestral pasa de un Sharpe de 1.19 a 0.36 (69.5 % menos), porque depende de rendimientos esperados muy difíciles de estimar. Solo 1/N, que no estima nada, mejora fuera de muestra.</p>
+<h4>Pesos fijos (prueba 2020-2026)</h4>
+<div class='tabla'>
+  <table>
+    <thead><tr><th></th><th>Rendimiento anual (%)</th><th>Volatilidad anual (%)</th><th>Sharpe prueba</th><th>Máx. caída (%)</th><th>Mayor peso abs.</th><th>Suma pesos cortos</th><th>Sharpe entrenamiento (optimista)</th></tr></thead>
+    <tbody>
+      <tr class='resalta'><td class='izq'>1/N</td><td>14.40</td><td>18.22</td><td>0.636</td><td>24.03</td><td>0.083</td><td>0.000</td><td>0.522</td></tr>
+      <tr><td class='izq'>GMV muestral</td><td>6.44</td><td>14.66</td><td>0.250</td><td>18.48</td><td>0.527</td><td>-0.367</td><td>0.644</td></tr>
+      <tr><td class='izq'>Tangente muestral</td><td>11.93</td><td>25.32</td><td>0.362</td><td>22.16</td><td>0.740</td><td>-1.290</td><td>1.187</td></tr>
+      <tr><td class='izq'>GMV Ledoit-Wolf</td><td>5.78</td><td>14.78</td><td>0.203</td><td>18.87</td><td>0.414</td><td>-0.258</td><td>0.660</td></tr>
+      <tr><td class='izq'>GMV PCA</td><td>-1.94</td><td>17.39</td><td>-0.269</td><td>35.59</td><td>0.513</td><td>-0.626</td><td>0.421</td></tr>
+      <tr><td class='izq'>Tangente sin corto</td><td>10.83</td><td>16.88</td><td>0.477</td><td>21.60</td><td>0.492</td><td>0.000</td><td>0.908</td></tr>
+    </tbody>
+  </table>
+</div>
+<h4>Reestimación anual con ventana de 60 meses (prueba 2020-2026)</h4>
+<div class='tabla'>
+  <table>
+    <thead><tr><th></th><th>Rendimiento anual (%)</th><th>Volatilidad anual (%)</th><th>Sharpe</th><th>Máx. caída (%)</th></tr></thead>
+    <tbody>
+      <tr><td class='izq'>1/N</td><td>14.40</td><td>18.22</td><td>0.636</td><td>24.03</td></tr>
+      <tr><td class='izq'>GMV muestral</td><td>10.65</td><td>17.36</td><td>0.453</td><td>21.76</td></tr>
+      <tr><td class='izq'>GMV Ledoit-Wolf</td><td>7.70</td><td>16.30</td><td>0.302</td><td>21.55</td></tr>
+      <tr><td class='izq'>Tangente muestral</td><td>49.96</td><td>49.40</td><td>0.956</td><td>53.29</td></tr>
+      <tr><td class='izq'>Tangente sin corto</td><td>12.36</td><td>20.59</td><td>0.466</td><td>27.09</td></tr>
+    </tbody>
+  </table>
+</div>
+</section>
+
+<section id="conclusion">
+<h2>Conclusión</h2>
+<div class="caja">
+<p><b>Método para replicar Carry.</b> Lasso es el método más adecuado. Con 240 meses replica
+Carry usando solo 12 de los 29 sectores, con un error de prueba 1.1 % menor que MCO:
+casi la misma precisión con menos posiciones. Su ventaja es mayor cuando hay poca historia: con 36 meses, Ridge y Lasso
+reducen el error de prueba más de 60 %.</p>
+<p><b>Construcción del portafolio.</b> El portafolio de pesos iguales (1/N) es la mejor base. Los sectores se mueven
+principalmente por el mercado (57 % de su variación), y ese riesgo no se elimina al
+diversificar. La tangente de Markowitz prometía un Sharpe de
+1.19, pero en 2020-2026 solo logró
+0.36, mientras que 1/N logró 0.64.
+Si se decide optimizar, conviene hacerlo sin ventas en corto.</p>
+<p><b>Limitación.</b> Solo se evaluó un periodo de prueba de 81 meses, que incluye la pandemia, y sin costos
+de transacción, por lo que las diferencias entre estrategias no son estadísticamente concluyentes.</p>
+</div>
+</section>
+
+</main>
+
+<!-- datos de las gráficas y código que las dibuja -->
+<script>
+// Datos de las gráficas del dashboard (los calcula dashboard/generar_html.py)
+// Cada gráfica tiene 'data' (las trazas) y 'layout' (títulos, ejes y controles).
+const FIGURAS = [];
+
+// Gráfica 1.1 Coeficientes de Ridge según lambda (se dibuja en el div con id g0)
+FIGURAS.push({"data": [{"type": "bar", "x": ["Cnstr", "Servs", "Telcm", "FabPr", "Mines", "Hshld", "Rtail", "Whlsl", "Chems", "Clths", "Beer", "Txtls", "Food", "Coal", "Books", "Util", "Smoke", "BusEq", "Fin", "ElcEq", "Hlth", "Autos", "Other", "Games", "Steel", "Oil", "Trans", "Meals", "Paper"], "y": [-0.7071, -0.6081, -0.5226, -0.3849, -0.2822, -0.2635, -0.2403, -0.1571, -0.0852, -0.0771, -0.0524, 0.0106, 0.0152, 0.052, 0.0661, 0.1139, 0.1642, 0.196, 0.2354, 0.4109, 0.43, 0.5989, 0.7154, 0.7605, 0.8436, 0.8683, 1.0329, 1.3059, 1.6696], "marker_color": "#e5736b", "name": "lambda = 0.1", "visible": false}, {"type": "bar", "x": ["Cnstr", "Servs", "Telcm", "FabPr", "Mines", "Hshld", "Rtail", "Whlsl", "Chems", "Clths", "Beer", "Txtls", "Food", "Coal", "Books", "Util", "Smoke", "BusEq", "Fin", "ElcEq", "Hlth", "Autos", "Other", "Games", "Steel", "Oil", "Trans", "Meals", "Paper"], "y": [-0.7011, -0.6049, -0.5213, -0.3781, -0.2821, -0.2617, -0.2398, -0.1556, -0.0797, -0.0753, -0.0512, 0.0103, 0.0154, 0.051, 0.0662, 0.1146, 0.1648, 0.1925, 0.2358, 0.4088, 0.4294, 0.5985, 0.7149, 0.7572, 0.8411, 0.8642, 1.0312, 1.303, 1.6601], "marker_color": "#e5736b", "name": "lambda = 0.316228", "visible": false}, {"type": "bar", "x": ["Cnstr", "Servs", "Telcm", "FabPr", "Mines", "Hshld", "Rtail", "Whlsl", "Chems", "Clths", "Beer", "Txtls", "Food", "Coal", "Books", "Util", "Smoke", "BusEq", "Fin", "ElcEq", "Hlth", "Autos", "Other", "Games", "Steel", "Oil", "Trans", "Meals", "Paper"], "y": [-0.6825, -0.5952, -0.517, -0.3576, -0.2817, -0.2563, -0.2382, -0.1509, -0.0633, -0.0697, -0.0474, 0.0093, 0.016, 0.0482, 0.0663, 0.1165, 0.1667, 0.182, 0.2373, 0.4025, 0.4274, 0.5973, 0.7132, 0.747, 0.833, 0.8516, 1.0259, 1.2937, 1.6309], "marker_color": "#e5736b", "name": "lambda = 1", "visible": false}, {"type": "bar", "x": ["Cnstr", "Servs", "Telcm", "FabPr", "Mines", "Hshld", "Rtail", "Whlsl", "Chems", "Clths", "Beer", "Txtls", "Food", "Coal", "Books", "Util", "Smoke", "BusEq", "Fin", "ElcEq", "Hlth", "Autos", "Other", "Games", "Steel", "Oil", "Trans", "Meals", "Paper"], "y": [-0.6281, -0.5676, -0.5037, -0.3017, -0.2791, -0.2399, -0.2325, -0.1367, -0.017, -0.0534, -0.0368, 0.0074, 0.0178, 0.0409, 0.0663, 0.1223, 0.1715, 0.1537, 0.2418, 0.3861, 0.4212, 0.593, 0.7081, 0.7176, 0.8083, 0.8153, 1.0095, 1.2654, 1.5476], "marker_color": "#e5736b", "name": "lambda = 3.16228", "visible": false}, {"type": "bar", "x": ["Cnstr", "Servs", "Telcm", "FabPr", "Mines", "Hshld", "Rtail", "Whlsl", "Chems", "Clths", "Beer", "Txtls", "Food", "Coal", "Books", "Util", "Smoke", "BusEq", "Fin", "ElcEq", "Hlth", "Autos", "Other", "Games", "Steel", "Oil", "Trans", "Meals", "Paper"], "y": [-0.4906, -0.5005, -0.4643, -0.1814, -0.2628, -0.1959, -0.2113, -0.098, 0.0877, -0.0128, -0.0125, 0.0084, 0.0231, 0.0277, 0.0645, 0.1374, 0.1802, 0.0962, 0.2546, 0.354, 0.4033, 0.5763, 0.6923, 0.645, 0.7387, 0.7266, 0.9613, 1.1849, 1.349], "marker_color": "#e5736b", "name": "lambda = 10", "visible": true}, {"type": "bar", "x": ["Cnstr", "Servs", "Telcm", "FabPr", "Mines", "Hshld", "Rtail", "Whlsl", "Chems", "Clths", "Beer", "Txtls", "Food", "Coal", "Books", "Util", "Smoke", "BusEq", "Fin", "ElcEq", "Hlth", "Autos", "Other", "Games", "Steel", "Oil", "Trans", "Meals", "Paper"], "y": [-0.2421, -0.3745, -0.3684, -0.0151, -0.1972, -0.1022, -0.1441, -0.0159, 0.2316, 0.0635, 0.027, 0.0341, 0.0405, 0.0207, 0.0651, 0.1656, 0.1834, 0.0313, 0.2817, 0.3183, 0.3594, 0.5219, 0.6444, 0.5132, 0.59, 0.5691, 0.8416, 0.9985, 1.0193], "marker_color": "#e5736b", "name": "lambda = 31.6228", "visible": false}, {"type": "bar", "x": ["Cnstr", "Servs", "Telcm", "FabPr", "Mines", "Hshld", "Rtail", "Whlsl", "Chems", "Clths", "Beer", "Txtls", "Food", "Coal", "Books", "Util", "Smoke", "BusEq", "Fin", "ElcEq", "Hlth", "Autos", "Other", "Games", "Steel", "Oil", "Trans", "Meals", "Paper"], "y": [0.0207, -0.1986, -0.2035, 0.1155, -0.0679, 0.0285, -0.0178, 0.0923, 0.3077, 0.1522, 0.0735, 0.104, 0.0851, 0.0397, 0.0994, 0.1885, 0.168, 0.0172, 0.3023, 0.2893, 0.2881, 0.4178, 0.5282, 0.364, 0.4032, 0.3927, 0.6361, 0.7112, 0.6789], "marker_color": "#e5736b", "name": "lambda = 100", "visible": false}, {"type": "bar", "x": ["Cnstr", "Servs", "Telcm", "FabPr", "Mines", "Hshld", "Rtail", "Whlsl", "Chems", "Clths", "Beer", "Txtls", "Food", "Coal", "Books", "Util", "Smoke", "BusEq", "Fin", "ElcEq", "Hlth", "Autos", "Other", "Games", "Steel", "Oil", "Trans", "Meals", "Paper"], "y": [0.165, -0.0257, -0.0238, 0.1754, 0.0505, 0.1224, 0.0992, 0.1668, 0.2882, 0.1986, 0.1101, 0.167, 0.1366, 0.0713, 0.1566, 0.1794, 0.1423, 0.0617, 0.2795, 0.2562, 0.2214, 0.3097, 0.37, 0.2644, 0.2728, 0.266, 0.4242, 0.4455, 0.4363], "marker_color": "#e5736b", "name": "lambda = 316.228", "visible": false}, {"type": "bar", "x": ["Cnstr", "Servs", "Telcm", "FabPr", "Mines", "Hshld", "Rtail", "Whlsl", "Chems", "Clths", "Beer", "Txtls", "Food", "Coal", "Books", "Util", "Smoke", "BusEq", "Fin", "ElcEq", "Hlth", "Autos", "Other", "Games", "Steel", "Oil", "Trans", "Meals", "Paper"], "y": [0.1874, 0.0761, 0.081, 0.179, 0.0987, 0.1382, 0.1424, 0.1771, 0.2302, 0.1856, 0.1113, 0.1698, 0.1449, 0.0828, 0.1708, 0.1439, 0.1121, 0.1027, 0.2237, 0.2131, 0.17, 0.2247, 0.2432, 0.2039, 0.2015, 0.1865, 0.2739, 0.2729, 0.2836], "marker_color": "#e5736b", "name": "lambda = 1000", "visible": false}, {"type": "bar", "x": ["Cnstr", "Servs", "Telcm", "FabPr", "Mines", "Hshld", "Rtail", "Whlsl", "Chems", "Clths", "Beer", "Txtls", "Food", "Coal", "Books", "Util", "Smoke", "BusEq", "Fin", "ElcEq", "Hlth", "Autos", "Other", "Games", "Steel", "Oil", "Trans", "Meals", "Paper"], "y": [0.1394, 0.0865, 0.0893, 0.1338, 0.0844, 0.1015, 0.1152, 0.1321, 0.1533, 0.1309, 0.0796, 0.1232, 0.1065, 0.0647, 0.1291, 0.0943, 0.0737, 0.0922, 0.1485, 0.1472, 0.1132, 0.1447, 0.1467, 0.138, 0.1353, 0.1188, 0.164, 0.1579, 0.1706], "marker_color": "#e5736b", "name": "lambda = 3162.28", "visible": false}, {"type": "bar", "x": ["Cnstr", "Servs", "Telcm", "FabPr", "Mines", "Hshld", "Rtail", "Whlsl", "Chems", "Clths", "Beer", "Txtls", "Food", "Coal", "Books", "Util", "Smoke", "BusEq", "Fin", "ElcEq", "Hlth", "Autos", "Other", "Games", "Steel", "Oil", "Trans", "Meals", "Paper"], "y": [0.0724, 0.0506, 0.0518, 0.0701, 0.0459, 0.0523, 0.0616, 0.0689, 0.0769, 0.0669, 0.0406, 0.0635, 0.055, 0.0344, 0.0677, 0.0468, 0.0366, 0.0514, 0.0743, 0.075, 0.0569, 0.0718, 0.0708, 0.07, 0.0686, 0.0587, 0.0789, 0.0747, 0.0822], "marker_color": "#e5736b", "name": "lambda = 10000", "visible": false}], "layout": {"xaxis": {"title": "Sector (regresora)", "tickangle": -60}, "yaxis": {"title": "Coeficiente estandarizado (% por 1 desv. est.)", "range": [-0.8, 1.8]}, "showlegend": false, "sliders": [{"active": 4, "steps": [{"method": "restyle", "label": "-1.0", "args": [{"visible": [true, false, false, false, false, false, false, false, false, false, false]}]}, {"method": "restyle", "label": "-0.5", "args": [{"visible": [false, true, false, false, false, false, false, false, false, false, false]}]}, {"method": "restyle", "label": "0.0", "args": [{"visible": [false, false, true, false, false, false, false, false, false, false, false]}]}, {"method": "restyle", "label": "0.5", "args": [{"visible": [false, false, false, true, false, false, false, false, false, false, false]}]}, {"method": "restyle", "label": "1.0", "args": [{"visible": [false, false, false, false, true, false, false, false, false, false, false]}]}, {"method": "restyle", "label": "1.5", "args": [{"visible": [false, false, false, false, false, true, false, false, false, false, false]}]}, {"method": "restyle", "label": "2.0", "args": [{"visible": [false, false, false, false, false, false, true, false, false, false, false]}]}, {"method": "restyle", "label": "2.5", "args": [{"visible": [false, false, false, false, false, false, false, true, false, false, false]}]}, {"method": "restyle", "label": "3.0", "args": [{"visible": [false, false, false, false, false, false, false, false, true, false, false]}]}, {"method": "restyle", "label": "3.5", "args": [{"visible": [false, false, false, false, false, false, false, false, false, true, false]}]}, {"method": "restyle", "label": "4.0", "args": [{"visible": [false, false, false, false, false, false, false, false, false, false, true]}]}], "currentvalue": {"prefix": "log10(lambda) = "}, "pad": {"t": 90}}], "margin": {"t": 30, "b": 40}, "height": 580}});
+
+// Gráfica 1.2 RMSE dentro y fuera de muestra por ventana (se dibuja en el div con id g1)
+FIGURAS.push({"data": [{"type": "bar", "name": "Entrenamiento (dentro de muestra)", "x": ["MCO", "Ridge", "Lasso", "Elastic Net"], "visible": false, "y": [1.878, 3.908, 3.521, 3.52], "marker_color": "#f2b8b5", "text": ["1.88", "3.91", "3.52", "3.52"], "textposition": "outside"}, {"type": "bar", "name": "Prueba 2020-2026 (fuera de muestra)", "x": ["MCO", "Ridge", "Lasso", "Elastic Net"], "visible": false, "y": [13.639, 5.142, 5.164, 5.144], "marker_color": "#7f1d1d", "text": ["13.64", "5.14", "5.16", "5.14"], "textposition": "outside"}, {"type": "bar", "name": "Entrenamiento (dentro de muestra)", "x": ["MCO", "Ridge", "Lasso", "Elastic Net"], "visible": false, "y": [2.613, 3.178, 3.126, 3.201], "marker_color": "#f2b8b5", "text": ["2.61", "3.18", "3.13", "3.20"], "textposition": "outside"}, {"type": "bar", "name": "Prueba 2020-2026 (fuera de muestra)", "x": ["MCO", "Ridge", "Lasso", "Elastic Net"], "visible": false, "y": [6.468, 5.038, 4.978, 5.072], "marker_color": "#7f1d1d", "text": ["6.47", "5.04", "4.98", "5.07"], "textposition": "outside"}, {"type": "bar", "name": "Entrenamiento (dentro de muestra)", "x": ["MCO", "Ridge", "Lasso", "Elastic Net"], "visible": false, "y": [2.469, 2.689, 2.623, 2.661], "marker_color": "#f2b8b5", "text": ["2.47", "2.69", "2.62", "2.66"], "textposition": "outside"}, {"type": "bar", "name": "Prueba 2020-2026 (fuera de muestra)", "x": ["MCO", "Ridge", "Lasso", "Elastic Net"], "visible": false, "y": [5.126, 5.01, 5.052, 5.027], "marker_color": "#7f1d1d", "text": ["5.13", "5.01", "5.05", "5.03"], "textposition": "outside"}, {"type": "bar", "name": "Entrenamiento (dentro de muestra)", "x": ["MCO", "Ridge", "Lasso", "Elastic Net"], "visible": true, "y": [3.27, 3.514, 3.376, 3.465], "marker_color": "#f2b8b5", "text": ["3.27", "3.51", "3.38", "3.46"], "textposition": "outside"}, {"type": "bar", "name": "Prueba 2020-2026 (fuera de muestra)", "x": ["MCO", "Ridge", "Lasso", "Elastic Net"], "visible": true, "y": [4.812, 4.803, 4.761, 4.775], "marker_color": "#7f1d1d", "text": ["4.81", "4.80", "4.76", "4.78"], "textposition": "outside"}], "layout": {"title": {"text": "Error dentro y fuera de muestra al replicar Carry (entrenando con 240 meses)", "x": 0.01, "xanchor": "left", "y": 0.985, "yanchor": "top"}, "barmode": "group", "xaxis": {"title": "Método"}, "yaxis": {"title": "RMSE (% mensual)", "range": [0, 16]}, "updatemenus": [{"type": "buttons", "direction": "right", "buttons": [{"method": "update", "label": "36 meses", "args": [{"visible": [true, true, false, false, false, false, false, false]}, {"title.text": "Error dentro y fuera de muestra al replicar Carry (entrenando con 36 meses)"}]}, {"method": "update", "label": "60 meses", "args": [{"visible": [false, false, true, true, false, false, false, false]}, {"title.text": "Error dentro y fuera de muestra al replicar Carry (entrenando con 60 meses)"}]}, {"method": "update", "label": "120 meses", "args": [{"visible": [false, false, false, false, true, true, false, false]}, {"title.text": "Error dentro y fuera de muestra al replicar Carry (entrenando con 120 meses)"}]}, {"method": "update", "label": "240 meses", "args": [{"visible": [false, false, false, false, false, false, true, true]}, {"title.text": "Error dentro y fuera de muestra al replicar Carry (entrenando con 240 meses)"}]}], "active": 3, "x": 0, "y": 1.02, "xanchor": "left", "yanchor": "bottom"}], "legend": {"orientation": "h", "y": -0.2}, "margin": {"t": 125}, "height": 500}});
+
+// Gráfica 1.3 Monte Carlo (se dibuja en el div con id g2)
+FIGURAS.push({"data": [{"type": "bar", "name": "MCO", "x": ["ρ=0.1<br>densa<br>abundantes", "ρ=0.1<br>densa<br>escasos", "ρ=0.1<br>escasa<br>abundantes", "ρ=0.1<br>escasa<br>escasos", "ρ=0.95<br>densa<br>abundantes", "ρ=0.95<br>densa<br>escasos", "ρ=0.95<br>escasa<br>abundantes", "ρ=0.95<br>escasa<br>escasos"], "y": [1.58, 3.164, 1.632, 3.352, 1.589, 3.077, 1.567, 3.246], "marker_color": "#7f7f7f", "visible": true}, {"type": "bar", "name": "Ridge", "x": ["ρ=0.1<br>densa<br>abundantes", "ρ=0.1<br>densa<br>escasos", "ρ=0.1<br>escasa<br>abundantes", "ρ=0.1<br>escasa<br>escasos", "ρ=0.95<br>densa<br>abundantes", "ρ=0.95<br>densa<br>escasos", "ρ=0.95<br>escasa<br>abundantes", "ρ=0.95<br>escasa<br>escasos"], "y": [1.579, 2.082, 1.582, 2.036, 1.524, 1.623, 1.55, 1.581], "marker_color": "#e5736b", "visible": true}, {"type": "bar", "name": "Lasso", "x": ["ρ=0.1<br>densa<br>abundantes", "ρ=0.1<br>densa<br>escasos", "ρ=0.1<br>escasa<br>abundantes", "ρ=0.1<br>escasa<br>escasos", "ρ=0.95<br>densa<br>abundantes", "ρ=0.95<br>densa<br>escasos", "ρ=0.95<br>escasa<br>abundantes", "ρ=0.95<br>escasa<br>escasos"], "y": [1.577, 2.073, 1.571, 1.872, 1.558, 1.603, 1.528, 1.679], "marker_color": "#e8833a", "visible": true}, {"type": "bar", "name": "Elastic Net", "x": ["ρ=0.1<br>densa<br>abundantes", "ρ=0.1<br>densa<br>escasos", "ρ=0.1<br>escasa<br>abundantes", "ρ=0.1<br>escasa<br>escasos", "ρ=0.95<br>densa<br>abundantes", "ρ=0.95<br>densa<br>escasos", "ρ=0.95<br>escasa<br>abundantes", "ρ=0.95<br>escasa<br>escasos"], "y": [1.571, 2.058, 1.545, 1.862, 1.531, 1.583, 1.525, 1.594], "marker_color": "#2ca02c", "visible": true}, {"type": "bar", "name": "MCO", "x": ["ρ=0.1<br>densa<br>abundantes", "ρ=0.1<br>densa<br>escasos", "ρ=0.1<br>escasa<br>abundantes", "ρ=0.1<br>escasa<br>escasos", "ρ=0.95<br>densa<br>abundantes", "ρ=0.95<br>densa<br>escasos", "ρ=0.95<br>escasa<br>abundantes", "ρ=0.95<br>escasa<br>escasos"], "y": [0.5, 2.812, 0.525, 3.073, 2.114, 11.332, 2.029, 12.169], "marker_color": "#7f7f7f", "visible": false}, {"type": "bar", "name": "Ridge", "x": ["ρ=0.1<br>densa<br>abundantes", "ρ=0.1<br>densa<br>escasos", "ρ=0.1<br>escasa<br>abundantes", "ρ=0.1<br>escasa<br>escasos", "ρ=0.95<br>densa<br>abundantes", "ρ=0.95<br>densa<br>escasos", "ρ=0.95<br>escasa<br>abundantes", "ρ=0.95<br>escasa<br>escasos"], "y": [0.494, 1.388, 0.5, 1.356, 1.444, 1.883, 1.439, 1.766], "marker_color": "#e5736b", "visible": false}, {"type": "bar", "name": "Lasso", "x": ["ρ=0.1<br>densa<br>abundantes", "ρ=0.1<br>densa<br>escasos", "ρ=0.1<br>escasa<br>abundantes", "ρ=0.1<br>escasa<br>escasos", "ρ=0.95<br>densa<br>abundantes", "ρ=0.95<br>densa<br>escasos", "ρ=0.95<br>escasa<br>abundantes", "ρ=0.95<br>escasa<br>escasos"], "y": [0.493, 1.454, 0.414, 1.048, 1.618, 1.934, 1.259, 1.99], "marker_color": "#e8833a", "visible": false}, {"type": "bar", "name": "Elastic Net", "x": ["ρ=0.1<br>densa<br>abundantes", "ρ=0.1<br>densa<br>escasos", "ρ=0.1<br>escasa<br>abundantes", "ρ=0.1<br>escasa<br>escasos", "ρ=0.95<br>densa<br>abundantes", "ρ=0.95<br>densa<br>escasos", "ρ=0.95<br>escasa<br>abundantes", "ρ=0.95<br>escasa<br>escasos"], "y": [0.478, 1.415, 0.356, 1.011, 1.45, 1.791, 1.352, 1.892], "marker_color": "#2ca02c", "visible": false}], "layout": {"title": {"text": "Monte Carlo: RMSE de prueba por escenario", "x": 0.01, "xanchor": "left", "y": 0.985, "yanchor": "top"}, "barmode": "group", "xaxis": {"title": "Escenario (colinealidad / verdad / datos)"}, "yaxis": {"title": "RMSE de prueba (media geométrica; mínimo posible 1.5)", "type": "log"}, "updatemenus": [{"type": "buttons", "direction": "right", "buttons": [{"method": "update", "label": "RMSE de prueba", "args": [{"visible": [true, true, true, true, false, false, false, false]}, {"yaxis.title.text": "RMSE de prueba (media geométrica; mínimo posible 1.5)", "title.text": "Monte Carlo: RMSE de prueba por escenario"}]}, {"method": "update", "label": "Error al estimar beta", "args": [{"visible": [false, false, false, false, true, true, true, true]}, {"yaxis.title.text": "||b - beta|| (media geométrica)", "title.text": "Monte Carlo: Error al estimar beta por escenario"}]}], "active": 0, "x": 0, "y": 1.02, "xanchor": "left", "yanchor": "bottom"}], "legend": {"orientation": "h", "y": -0.3}, "margin": {"t": 125, "b": 40}, "height": 540}});
+
+// Gráfica 2. VIF de cada variable según el remedio (se dibuja en el div con id g3)
+FIGURAS.push({"data": [{"type": "bar", "x": ["GNPDEFL", "GNP", "UNEMP", "ARMED", "POP", "YEAR"], "y": [135.53, 1788.51, 33.62, 3.59, 399.15, 758.98], "name": "MCO completo", "visible": true, "marker_color": ["#d62728", "#d62728", "#d62728", "#2ca02c", "#d62728", "#d62728"], "text": ["135.5", "1,788.5", "33.6", "3.6", "399.2", "759.0"], "textposition": "outside"}, {"type": "bar", "x": ["GNPDEFL", "UNEMP", "ARMED", "YEAR"], "y": [72.19, 3.46, 2.32, 76.86], "name": "Quitar GNP y POP", "visible": false, "marker_color": ["#d62728", "#2ca02c", "#2ca02c", "#d62728"], "text": ["72.2", "3.5", "2.3", "76.9"], "textposition": "outside"}, {"type": "bar", "x": ["PIB_real_pc", "UNEMP", "ARMED"], "y": [3.07, 2.06, 2.52], "name": "Transformar", "visible": false, "marker_color": ["#2ca02c", "#2ca02c", "#2ca02c"], "text": ["3.1", "2.1", "2.5"], "textposition": "outside"}, {"type": "scatter", "mode": "lines", "x": [-0.5, 5.5], "y": [10, 10], "showlegend": false, "line": {"color": "black", "dash": "dash"}, "name": "VIF = 10", "hoverinfo": "skip", "xaxis": "x2"}], "layout": {"showlegend": false, "xaxis": {"title": "Variable"}, "xaxis2": {"overlaying": "x", "range": [-0.5, 5.5], "visible": false}, "yaxis": {"title": "VIF (sin unidades, escala log)", "type": "log", "range": [0, 3.8]}, "updatemenus": [{"type": "buttons", "direction": "right", "buttons": [{"method": "restyle", "label": "MCO completo", "args": [{"visible": [true, false, false, true]}]}, {"method": "restyle", "label": "Quitar GNP y POP", "args": [{"visible": [false, true, false, true]}]}, {"method": "restyle", "label": "Transformar", "args": [{"visible": [false, false, true, true]}]}], "active": 0, "x": 0, "y": 1.02, "xanchor": "left", "yanchor": "bottom"}], "margin": {"t": 60}, "height": 500}});
+
+// Gráfica 2. Error LOO de cada remedio (se dibuja en el div con id g4)
+FIGURAS.push({"data": [{"type": "bar", "x": ["MCO completo", "Quitar GNP y POP", "Transformar", "PCR", "PLS", "Ridge"], "y": [424.8, 398.5, 586.2, 1075.6, 899.4, 439.6], "marker_color": ["#9e9e9e", "#2ca02c", "#9e9e9e", "#9e9e9e", "#9e9e9e", "#9e9e9e"], "text": ["425", "398", "586", "1,076", "899", "440"], "textposition": "outside"}], "layout": {"title": {"text": "Error de validación leave-one-out de cada remedio (Longley)", "x": 0.01, "xanchor": "left", "y": 0.985, "yanchor": "top"}, "xaxis": {"title": "Remedio"}, "yaxis": {"title": "RMSE LOO (miles de empleos)", "range": [0, 1250]}, "showlegend": false, "height": 500}});
+
+// Gráfica 3.1 Método de la potencia (se dibuja en el div con id g5)
+FIGURAS.push({"data": [{"type": "bar", "x": ["x1", "x2", "x3", "x4", "x5"], "y": [-0.2058, 0.7511, 0.5914, -0.1225, -0.1694], "name": "a₁ (eigh, el verdadero)", "marker_color": "#9e9e9e"}, {"type": "bar", "x": ["x1", "x2", "x3", "x4", "x5"], "y": [-0.2735, -0.3526, 0.6875, -0.5575, -0.1323], "name": "v<sub>t</sub> (método de la potencia)", "marker_color": "#e5736b", "visible": true}, {"type": "bar", "x": ["x1", "x2", "x3", "x4", "x5"], "y": [-0.212, 0.2165, 0.7099, -0.6356, -0.0174], "name": "v<sub>t</sub> (método de la potencia)", "marker_color": "#e5736b", "visible": false}, {"type": "bar", "x": ["x1", "x2", "x3", "x4", "x5"], "y": [-0.1758, 0.5822, 0.6819, -0.3938, -0.1002], "name": "v<sub>t</sub> (método de la potencia)", "marker_color": "#e5736b", "visible": false}, {"type": "bar", "x": ["x1", "x2", "x3", "x4", "x5"], "y": [-0.1864, 0.7009, 0.6319, -0.232, -0.1444], "name": "v<sub>t</sub> (método de la potencia)", "marker_color": "#e5736b", "visible": false}, {"type": "bar", "x": ["x1", "x2", "x3", "x4", "x5"], "y": [-0.1969, 0.7347, 0.6072, -0.1642, -0.1604], "name": "v<sub>t</sub> (método de la potencia)", "marker_color": "#e5736b", "visible": false}, {"type": "bar", "x": ["x1", "x2", "x3", "x4", "x5"], "y": [-0.2021, 0.7454, 0.5974, -0.1382, -0.1661], "name": "v<sub>t</sub> (método de la potencia)", "marker_color": "#e5736b", "visible": false}, {"type": "bar", "x": ["x1", "x2", "x3", "x4", "x5"], "y": [-0.2044, 0.749, 0.5937, -0.1284, -0.1681], "name": "v<sub>t</sub> (método de la potencia)", "marker_color": "#e5736b", "visible": false}, {"type": "bar", "x": ["x1", "x2", "x3", "x4", "x5"], "y": [-0.2053, 0.7503, 0.5923, -0.1247, -0.1689], "name": "v<sub>t</sub> (método de la potencia)", "marker_color": "#e5736b", "visible": false}, {"type": "bar", "x": ["x1", "x2", "x3", "x4", "x5"], "y": [-0.2056, 0.7508, 0.5918, -0.1233, -0.1692], "name": "v<sub>t</sub> (método de la potencia)", "marker_color": "#e5736b", "visible": false}, {"type": "bar", "x": ["x1", "x2", "x3", "x4", "x5"], "y": [-0.2057, 0.751, 0.5916, -0.1228, -0.1693], "name": "v<sub>t</sub> (método de la potencia)", "marker_color": "#e5736b", "visible": false}, {"type": "bar", "x": ["x1", "x2", "x3", "x4", "x5"], "y": [-0.2058, 0.7511, 0.5915, -0.1226, -0.1694], "name": "v<sub>t</sub> (método de la potencia)", "marker_color": "#e5736b", "visible": false}, {"type": "bar", "x": ["x1", "x2", "x3", "x4", "x5"], "y": [-0.2058, 0.7511, 0.5915, -0.1225, -0.1694], "name": "v<sub>t</sub> (método de la potencia)", "marker_color": "#e5736b", "visible": false}, {"type": "bar", "x": ["x1", "x2", "x3", "x4", "x5"], "y": [-0.2058, 0.7511, 0.5915, -0.1225, -0.1694], "name": "v<sub>t</sub> (método de la potencia)", "marker_color": "#e5736b", "visible": false}, {"type": "bar", "x": ["x1", "x2", "x3", "x4", "x5"], "y": [-0.2058, 0.7511, 0.5914, -0.1225, -0.1694], "name": "v<sub>t</sub> (método de la potencia)", "marker_color": "#e5736b", "visible": false}, {"type": "bar", "x": ["x1", "x2", "x3", "x4", "x5"], "y": [-0.2058, 0.7511, 0.5914, -0.1225, -0.1694], "name": "v<sub>t</sub> (método de la potencia)", "marker_color": "#e5736b", "visible": false}, {"type": "bar", "x": ["x1", "x2", "x3", "x4", "x5"], "y": [-0.2058, 0.7511, 0.5914, -0.1225, -0.1694], "name": "v<sub>t</sub> (método de la potencia)", "marker_color": "#e5736b", "visible": false}], "layout": {"barmode": "group", "xaxis": {"title": "Coordenada del vector"}, "yaxis": {"title": "Valor de la coordenada (vector de norma 1)", "range": [-1, 1]}, "sliders": [{"active": 0, "steps": [{"method": "restyle", "label": "0", "args": [{"visible": [true, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false]}]}, {"method": "restyle", "label": "1", "args": [{"visible": [true, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false]}]}, {"method": "restyle", "label": "2", "args": [{"visible": [true, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false]}]}, {"method": "restyle", "label": "3", "args": [{"visible": [true, false, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false]}]}, {"method": "restyle", "label": "4", "args": [{"visible": [true, false, false, false, false, true, false, false, false, false, false, false, false, false, false, false, false]}]}, {"method": "restyle", "label": "5", "args": [{"visible": [true, false, false, false, false, false, true, false, false, false, false, false, false, false, false, false, false]}]}, {"method": "restyle", "label": "6", "args": [{"visible": [true, false, false, false, false, false, false, true, false, false, false, false, false, false, false, false, false]}]}, {"method": "restyle", "label": "7", "args": [{"visible": [true, false, false, false, false, false, false, false, true, false, false, false, false, false, false, false, false]}]}, {"method": "restyle", "label": "8", "args": [{"visible": [true, false, false, false, false, false, false, false, false, true, false, false, false, false, false, false, false]}]}, {"method": "restyle", "label": "9", "args": [{"visible": [true, false, false, false, false, false, false, false, false, false, true, false, false, false, false, false, false]}]}, {"method": "restyle", "label": "10", "args": [{"visible": [true, false, false, false, false, false, false, false, false, false, false, true, false, false, false, false, false]}]}, {"method": "restyle", "label": "11", "args": [{"visible": [true, false, false, false, false, false, false, false, false, false, false, false, true, false, false, false, false]}]}, {"method": "restyle", "label": "12", "args": [{"visible": [true, false, false, false, false, false, false, false, false, false, false, false, false, true, false, false, false]}]}, {"method": "restyle", "label": "13", "args": [{"visible": [true, false, false, false, false, false, false, false, false, false, false, false, false, false, true, false, false]}]}, {"method": "restyle", "label": "14", "args": [{"visible": [true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, false]}]}, {"method": "restyle", "label": "15", "args": [{"visible": [true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true]}]}], "currentvalue": {"prefix": "Iteración t = "}, "pad": {"t": 50}}], "legend": {"x": 0.99, "xanchor": "right", "y": 0.99, "bgcolor": "rgba(255,255,255,0.8)"}, "margin": {"t": 30}, "height": 500}});
+
+// Gráfica 3.1 Convergencia del método de la potencia (se dibuja en el div con id g6)
+FIGURAS.push({"data": [{"type": "scatter", "mode": "lines+markers", "x": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40], "y": [73.21575356739851, 45.019768174365005, 19.612667828557132, 7.5091965276567905, 2.8201120440454983, 1.0573569458274568, 0.39646126226776035, 0.1486669224636806, 0.055749444967992785, 0.0209059764079168, 0.007839734707321475, 0.002939899848863297, 0.0011024621436212098, 0.0004134222018790177, 0.00015502987281113017, 5.8138161381314336e-05, 2.1800504449438904e-05, 8.099607985145754e-06, 2.9575586669421963e-06, 1.2074182697257333e-06, 1e-07, 1e-07, 1e-07, 1e-07, 1e-07, 1e-07, 1e-07, 1e-07, 1e-07, 1e-07, 1e-07, 1e-07, 1e-07, 1e-07, 1e-07, 1e-07, 1e-07, 1e-07, 1e-07, 1e-07, 1e-07], "name": "Ángulo observado", "marker": {"color": "#e5736b", "size": 5}}, {"type": "scatter", "mode": "lines", "x": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40], "y": [142.39661563556626, 53.398730863337285, 20.024524073751465, 7.5091965276567905, 2.8159486978712933, 1.0559807617017338, 0.3959927856381498, 0.14849729461430602, 0.05568648548036471, 0.020882432055136742, 0.00783091202067627, 0.002936592007753598, 0.0011012220029075982, 0.0004129582510903489, 0.00015485934415888068, 5.807225405958019e-05, 2.177709527234255e-05, 8.166410727128447e-06, 3.0624040226731647e-06, 1.1484015085024356e-06, 4.306505656884129e-07, 1.614939621331547e-07, 6.056023579993294e-08, 2.2710088424974827e-08, 8.516283159365552e-09, 3.1936061847620784e-09, 1.1976023192857782e-09, 4.491008697321664e-10, 1.6841282614956222e-10, 6.315480980608578e-11, 2.3683053677282138e-11, 8.881145128980793e-12, 3.3304294233677938e-12, 1.2489110337629214e-12, 4.68341637661095e-13, 1.7562811412291044e-13, 6.586054279609135e-14, 2.4697703548534233e-14, 9.261638830700328e-15, 3.4731145615126196e-15, 1.3024179605672308e-15], "name": "Teoría: (λ₂/λ₁)^t = 0.375^t", "line": {"color": "#d62728", "dash": "dash"}}], "layout": {"title": {"text": "Convergencia del método de la potencia", "x": 0.01, "xanchor": "left", "y": 0.985, "yanchor": "top"}, "xaxis": {"title": "Iteración t"}, "yaxis": {"title": "Ángulo con a₁ (grados, escala log)", "type": "log", "range": [-7, 2.2]}, "legend": {"x": 1, "xanchor": "right", "y": 1}, "height": 500}});
+
+// Gráfica 3.2 Cargas de los componentes principales (se dibuja en el div con id g7)
+FIGURAS.push({"data": [{"type": "bar", "orientation": "h", "x": [0.0994, 0.1066, 0.1149, 0.127, 0.1465, 0.1512, 0.1598, 0.1599, 0.1605, 0.1726, 0.1806, 0.1813, 0.1844, 0.1855, 0.1867, 0.1917, 0.193, 0.1966, 0.1978, 0.1979, 0.2011, 0.204, 0.2041, 0.2063, 0.2066, 0.2126, 0.2127, 0.2144, 0.2151, 0.217], "y": ["Smoke", "Coal", "Beer", "Util", "Mines", "Hshld", "Hlth", "Food", "Oil", "BusEq", "Servs", "Telcm", "Other", "Txtls", "Meals", "Rtail", "Clths", "Carry", "Autos", "Steel", "Games", "Books", "Trans", "Whlsl", "Fin", "FabPr", "Paper", "Cnstr", "Chems", "ElcEq"], "visible": true, "marker_color": ["#e5736b", "#e5736b", "#e5736b", "#e5736b", "#e5736b", "#e5736b", "#e5736b", "#e5736b", "#e5736b", "#e5736b", "#e5736b", "#e5736b", "#e5736b", "#e5736b", "#e5736b", "#e5736b", "#e5736b", "#e5736b", "#e5736b", "#e5736b", "#e5736b", "#e5736b", "#e5736b", "#e5736b", "#e5736b", "#e5736b", "#e5736b", "#e5736b", "#e5736b", "#e5736b"], "name": "Componente 1"}, {"type": "bar", "orientation": "h", "x": [-0.2496, -0.2089, -0.2087, -0.2069, -0.1433, -0.1266, -0.122, -0.108, -0.0868, -0.0453, -0.0389, -0.0374, -0.0358, -0.0354, -0.034, -0.0337, -0.0216, -0.011, -0.0025, 0.021, 0.0428, 0.0481, 0.099, 0.1119, 0.1897, 0.2703, 0.3329, 0.3595, 0.3721, 0.4606], "y": ["BusEq", "Servs", "FabPr", "Steel", "Autos", "Coal", "Games", "ElcEq", "Mines", "Telcm", "Txtls", "Cnstr", "Chems", "Books", "Rtail", "Clths", "Trans", "Oil", "Whlsl", "Fin", "Carry", "Other", "Paper", "Meals", "Hlth", "Util", "Hshld", "Smoke", "Food", "Beer"], "visible": false, "marker_color": ["#d62728", "#d62728", "#d62728", "#d62728", "#d62728", "#d62728", "#d62728", "#d62728", "#d62728", "#d62728", "#d62728", "#d62728", "#d62728", "#d62728", "#d62728", "#d62728", "#d62728", "#d62728", "#d62728", "#e5736b", "#e5736b", "#e5736b", "#e5736b", "#e5736b", "#e5736b", "#e5736b", "#e5736b", "#e5736b", "#e5736b", "#e5736b"], "name": "Componente 2"}, {"type": "bar", "orientation": "h", "x": [-0.2573, -0.1605, -0.1566, -0.1243, -0.1171, -0.1151, -0.1092, -0.1051, -0.1004, -0.0997, -0.097, -0.0838, -0.0742, -0.0689, -0.0371, -0.0319, -0.0188, -0.0034, -0.0012, 0.0158, 0.0272, 0.0679, 0.0757, 0.1099, 0.1754, 0.1758, 0.2972, 0.3891, 0.4001, 0.5327], "y": ["Rtail", "Clths", "Txtls", "Meals", "Servs", "Trans", "BusEq", "Telcm", "Fin", "Hshld", "Games", "Other", "Autos", "Paper", "Books", "Hlth", "Beer", "Food", "Carry", "ElcEq", "Cnstr", "Whlsl", "Chems", "FabPr", "Steel", "Smoke", "Util", "Mines", "Oil", "Coal"], "visible": false, "marker_color": ["#d62728", "#d62728", "#d62728", "#d62728", "#d62728", "#d62728", "#d62728", "#d62728", "#d62728", "#d62728", "#d62728", "#d62728", "#d62728", "#d62728", "#d62728", "#d62728", "#d62728", "#d62728", "#d62728", "#e5736b", "#e5736b", "#e5736b", "#e5736b", "#e5736b", "#e5736b", "#e5736b", "#e5736b", "#e5736b", "#e5736b", "#e5736b"], "name": "Componente 3"}], "layout": {"title": {"text": "Cargas del componente 1: explica 57.2 % de la varianza de los 30 sectores", "x": 0.01, "xanchor": "left", "y": 0.985, "yanchor": "top"}, "showlegend": false, "xaxis": {"title": "Carga (peso del sector en el componente, vector de norma 1)"}, "yaxis": {"title": "Sector", "categoryorder": "array", "categoryarray": ["Smoke", "Coal", "Beer", "Util", "Mines", "Hshld", "Hlth", "Food", "Oil", "BusEq", "Servs", "Telcm", "Other", "Txtls", "Meals", "Rtail", "Clths", "Carry", "Autos", "Steel", "Games", "Books", "Trans", "Whlsl", "Fin", "FabPr", "Paper", "Cnstr", "Chems", "ElcEq"], "tickfont": {"size": 10}}, "updatemenus": [{"type": "buttons", "direction": "right", "buttons": [{"method": "update", "label": "Componente 1", "args": [{"visible": [true, false, false]}, {"title.text": "Cargas del componente 1: explica 57.2 % de la varianza de los 30 sectores", "yaxis.categoryarray": ["Smoke", "Coal", "Beer", "Util", "Mines", "Hshld", "Hlth", "Food", "Oil", "BusEq", "Servs", "Telcm", "Other", "Txtls", "Meals", "Rtail", "Clths", "Carry", "Autos", "Steel", "Games", "Books", "Trans", "Whlsl", "Fin", "FabPr", "Paper", "Cnstr", "Chems", "ElcEq"]}]}, {"method": "update", "label": "Componente 2", "args": [{"visible": [false, true, false]}, {"title.text": "Cargas del componente 2: explica 7.0 % de la varianza de los 30 sectores", "yaxis.categoryarray": ["BusEq", "Servs", "FabPr", "Steel", "Autos", "Coal", "Games", "ElcEq", "Mines", "Telcm", "Txtls", "Cnstr", "Chems", "Books", "Rtail", "Clths", "Trans", "Oil", "Whlsl", "Fin", "Carry", "Other", "Paper", "Meals", "Hlth", "Util", "Hshld", "Smoke", "Food", "Beer"]}]}, {"method": "update", "label": "Componente 3", "args": [{"visible": [false, false, true]}, {"title.text": "Cargas del componente 3: explica 5.9 % de la varianza de los 30 sectores", "yaxis.categoryarray": ["Rtail", "Clths", "Txtls", "Meals", "Servs", "Trans", "BusEq", "Telcm", "Fin", "Hshld", "Games", "Other", "Autos", "Paper", "Books", "Hlth", "Beer", "Food", "Carry", "ElcEq", "Cnstr", "Whlsl", "Chems", "FabPr", "Steel", "Smoke", "Util", "Mines", "Oil", "Coal"]}]}], "active": 0, "x": 0, "y": 1.02, "xanchor": "left", "yanchor": "bottom"}], "margin": {"t": 125}, "height": 760}});
+
+// Gráfica 4.1 Frontera eficiente (se dibuja en el div con id g8)
+FIGURAS.push({"data": [{"type": "scatter", "mode": "lines", "x": [16.026, 15.886, 15.747, 15.609, 15.473, 15.337, 15.202, 15.069, 14.937, 14.805, 14.676, 14.547, 14.419, 14.293, 14.168, 14.045, 13.923, 13.803, 13.683, 13.566, 13.45, 13.336, 13.223, 13.112, 13.003, 12.895, 12.79, 12.686, 12.584, 12.484, 12.386, 12.29, 12.197, 12.105, 12.016, 11.929, 11.844, 11.762, 11.682, 11.604, 11.529, 11.457, 11.387, 11.319, 11.255, 11.193, 11.134, 11.078, 11.025, 10.974, 10.927, 10.883, 10.841, 10.803, 10.768, 10.736, 10.707, 10.681, 10.659, 10.64, 10.624, 10.611, 10.602, 10.596, 10.593, 10.593, 10.597, 10.604, 10.615, 10.628, 10.645, 10.665, 10.689, 10.715, 10.745, 10.778, 10.814, 10.853, 10.895, 10.941, 10.989, 11.04, 11.094, 11.151, 11.211, 11.273, 11.339, 11.407, 11.477, 11.551, 11.626, 11.705, 11.785, 11.868, 11.954, 12.042, 12.132, 12.224, 12.318, 12.414, 12.513, 12.613, 12.716, 12.82, 12.926, 13.034, 13.144, 13.256, 13.369, 13.484, 13.6, 13.718, 13.837, 13.958, 14.081, 14.205, 14.33, 14.456, 14.584, 14.713, 14.843, 14.975, 15.108, 15.241, 15.376, 15.512, 15.649, 15.787, 15.926, 16.066, 16.207, 16.349, 16.492, 16.636, 16.78, 16.926, 17.072, 17.219, 17.366, 17.515, 17.664, 17.814, 17.964, 18.116, 18.268, 18.42, 18.573, 18.727, 18.882, 19.037, 19.192, 19.348, 19.505, 19.662, 19.82, 19.978, 20.137, 20.296, 20.455, 20.615, 20.776, 20.937, 21.098, 21.26, 21.422, 21.585, 21.748, 21.911, 22.075, 22.239, 22.404, 22.569, 22.734, 22.899, 23.065, 23.231, 23.398, 23.564, 23.732, 23.899, 24.067, 24.235, 24.403, 24.571, 24.74, 24.909, 25.078, 25.248, 25.417, 25.587, 25.758, 25.928, 26.099, 26.27, 26.441, 26.612, 26.784, 26.955, 27.127, 27.299], "y": [-3.566, -3.379, -3.193, -3.006, -2.82, -2.633, -2.447, -2.261, -2.074, -1.888, -1.701, -1.515, -1.328, -1.142, -0.955, -0.769, -0.582, -0.396, -0.209, -0.023, 0.164, 0.35, 0.536, 0.723, 0.909, 1.096, 1.282, 1.469, 1.655, 1.842, 2.028, 2.215, 2.401, 2.588, 2.774, 2.961, 3.147, 3.333, 3.52, 3.706, 3.893, 4.079, 4.266, 4.452, 4.639, 4.825, 5.012, 5.198, 5.385, 5.571, 5.758, 5.944, 6.13, 6.317, 6.503, 6.69, 6.876, 7.063, 7.249, 7.436, 7.622, 7.809, 7.995, 8.182, 8.368, 8.555, 8.741, 8.927, 9.114, 9.3, 9.487, 9.673, 9.86, 10.046, 10.233, 10.419, 10.606, 10.792, 10.979, 11.165, 11.352, 11.538, 11.724, 11.911, 12.097, 12.284, 12.47, 12.657, 12.843, 13.03, 13.216, 13.403, 13.589, 13.776, 13.962, 14.149, 14.335, 14.521, 14.708, 14.894, 15.081, 15.267, 15.454, 15.64, 15.827, 16.013, 16.2, 16.386, 16.573, 16.759, 16.945, 17.132, 17.318, 17.505, 17.691, 17.878, 18.064, 18.251, 18.437, 18.624, 18.81, 18.997, 19.183, 19.37, 19.556, 19.742, 19.929, 20.115, 20.302, 20.488, 20.675, 20.861, 21.048, 21.234, 21.421, 21.607, 21.794, 21.98, 22.167, 22.353, 22.539, 22.726, 22.912, 23.099, 23.285, 23.472, 23.658, 23.845, 24.031, 24.218, 24.404, 24.591, 24.777, 24.964, 25.15, 25.336, 25.523, 25.709, 25.896, 26.082, 26.269, 26.455, 26.642, 26.828, 27.015, 27.201, 27.388, 27.574, 27.761, 27.947, 28.133, 28.32, 28.506, 28.693, 28.879, 29.066, 29.252, 29.439, 29.625, 29.812, 29.998, 30.185, 30.371, 30.558, 30.744, 30.93, 31.117, 31.303, 31.49, 31.676, 31.863, 32.049, 32.236, 32.422, 32.609, 32.795, 32.982, 33.168, 33.355, 33.541], "name": "Frontera con ventas en corto", "line": {"color": "#e5736b"}}, {"type": "scatter", "mode": "lines", "x": [21.089, 19.36, 17.947, 16.673, 15.533, 14.544, 13.683, 12.949, 12.314, 11.793, 11.402, 11.151, 11.054, 11.073, 11.17, 11.324, 11.544, 11.83, 12.178, 12.587, 13.069, 13.619, 14.229, 14.908, 15.674, 16.672, 17.919, 19.365, 20.971, 22.701], "y": [1.923, 2.496, 3.069, 3.642, 4.215, 4.788, 5.361, 5.934, 6.507, 7.08, 7.653, 8.226, 8.799, 9.372, 9.945, 10.518, 11.091, 11.664, 12.237, 12.81, 13.383, 13.956, 14.529, 15.102, 15.675, 16.248, 16.821, 17.394, 17.967, 18.54], "name": "Frontera sin ventas en corto", "line": {"color": "#e8833a"}}, {"type": "scatter", "mode": "markers+text", "x": [28.317, 13.984, 21.092, 20.391, 46.082, 24.259, 12.172, 13.365, 15.589, 17.117, 22.704, 18.622], "y": [6.55, 9.469, 1.922, 10.428, 8.828, 12.084, 9.572, 7.46, 12.887, 5.083, 18.541, 10.952], "text": ["Autos", "Beer", "Books", "Chems", "Coal", "FabPr", "Food", "Hshld", "Meals", "Other", "Smoke", "Trans"], "textposition": "top right", "textfont": {"size": 9}, "name": "Sectores", "marker": {"color": "#9e9e9e", "size": 7}}, {"type": "scatter", "mode": "markers", "x": [10.593], "y": [8.434], "name": "GMV (mínima varianza)", "marker": {"color": "#2ca02c", "size": 11, "symbol": "diamond"}}, {"type": "scatter", "mode": "lines", "x": [0, 40], "y": [0.0, 51.06410115307356], "visible": false, "name": "Línea del mercado de capitales", "line": {"color": "#d62728", "dash": "dash", "width": 1.5}}, {"type": "scatter", "mode": "markers", "x": [16.983], "y": [21.681], "visible": false, "name": "Tangente (máximo Sharpe)", "marker": {"color": "#d62728", "size": 16, "symbol": "star"}}, {"type": "scatter", "mode": "lines", "x": [0, 40], "y": [1.0, 49.79821951107851], "visible": false, "name": "Línea del mercado de capitales", "line": {"color": "#d62728", "dash": "dash", "width": 1.5}}, {"type": "scatter", "mode": "markers", "x": [18.413], "y": [23.463], "visible": false, "name": "Tangente (máximo Sharpe)", "marker": {"color": "#d62728", "size": 16, "symbol": "star"}}, {"type": "scatter", "mode": "lines", "x": [0, 40], "y": [1.62, 49.109970222337104], "visible": false, "name": "Línea del mercado de capitales", "line": {"color": "#d62728", "dash": "dash", "width": 1.5}}, {"type": "scatter", "mode": "markers", "x": [19.55], "y": [24.83], "visible": false, "name": "Tangente (máximo Sharpe)", "marker": {"color": "#d62728", "size": 16, "symbol": "star"}}, {"type": "scatter", "mode": "lines", "x": [0, 40], "y": [2.0, 48.72803355344598], "visible": false, "name": "Línea del mercado de capitales", "line": {"color": "#d62728", "dash": "dash", "width": 1.5}}, {"type": "scatter", "mode": "markers", "x": [20.372], "y": [25.799], "visible": false, "name": "Tangente (máximo Sharpe)", "marker": {"color": "#d62728", "size": 16, "symbol": "star"}}, {"type": "scatter", "mode": "lines", "x": [0, 40], "y": [3.0, 47.88063171940695], "visible": false, "name": "Línea del mercado de capitales", "line": {"color": "#d62728", "dash": "dash", "width": 1.5}}, {"type": "scatter", "mode": "markers", "x": [23.167], "y": [28.994], "visible": false, "name": "Tangente (máximo Sharpe)", "marker": {"color": "#d62728", "size": 16, "symbol": "star"}}, {"type": "scatter", "mode": "lines", "x": [0, 40], "y": [4.0, 47.284548960738796], "visible": false, "name": "Línea del mercado de capitales", "line": {"color": "#d62728", "dash": "dash", "width": 1.5}}, {"type": "scatter", "mode": "markers", "x": [27.382], "y": [33.631], "visible": false, "name": "Tangente (máximo Sharpe)", "marker": {"color": "#d62728", "size": 16, "symbol": "star"}}, {"type": "scatter", "mode": "lines", "x": [0, 40], "y": [5.0, 46.96846846594056], "visible": false, "name": "Línea del mercado de capitales", "line": {"color": "#d62728", "dash": "dash", "width": 1.5}}, {"type": "scatter", "mode": "markers", "x": [34.281], "y": [40.968], "visible": false, "name": "Tangente (máximo Sharpe)", "marker": {"color": "#d62728", "size": 16, "symbol": "star"}}], "layout": {"xaxis": {"title": "Volatilidad anual (%)", "range": [0, 40]}, "yaxis": {"title": "Rendimiento anual (%)", "range": [-5, 45]}, "sliders": [{"active": 2, "steps": [{"method": "restyle", "label": "0.00", "args": [{"visible": [true, true, true, true, true, true, false, false, false, false, false, false, false, false, false, false, false, false]}]}, {"method": "restyle", "label": "1.00", "args": [{"visible": [true, true, true, true, false, false, true, true, false, false, false, false, false, false, false, false, false, false]}]}, {"method": "restyle", "label": "1.62", "args": [{"visible": [true, true, true, true, false, false, false, false, true, true, false, false, false, false, false, false, false, false]}]}, {"method": "restyle", "label": "2.00", "args": [{"visible": [true, true, true, true, false, false, false, false, false, false, true, true, false, false, false, false, false, false]}]}, {"method": "restyle", "label": "3.00", "args": [{"visible": [true, true, true, true, false, false, false, false, false, false, false, false, true, true, false, false, false, false]}]}, {"method": "restyle", "label": "4.00", "args": [{"visible": [true, true, true, true, false, false, false, false, false, false, false, false, false, false, true, true, false, false]}]}, {"method": "restyle", "label": "5.00", "args": [{"visible": [true, true, true, true, false, false, false, false, false, false, false, false, false, false, false, false, true, true]}]}], "currentvalue": {"visible": false}, "pad": {"t": 50}}], "legend": {"x": 0.01, "y": 0.99, "bgcolor": "rgba(255,255,255,0.8)"}, "margin": {"t": 30}, "height": 620}});
+
+// Gráfica 4.2 Valor de 1 peso invertido (se dibuja en el div con id g9)
+FIGURAS.push({"data": [{"type": "scatter", "mode": "lines", "x": ["2020-01-01", "2020-02-01", "2020-03-01", "2020-04-01", "2020-05-01", "2020-06-01", "2020-07-01", "2020-08-01", "2020-09-01", "2020-10-01", "2020-11-01", "2020-12-01", "2021-01-01", "2021-02-01", "2021-03-01", "2021-04-01", "2021-05-01", "2021-06-01", "2021-07-01", "2021-08-01", "2021-09-01", "2021-10-01", "2021-11-01", "2021-12-01", "2022-01-01", "2022-02-01", "2022-03-01", "2022-04-01", "2022-05-01", "2022-06-01", "2022-07-01", "2022-08-01", "2022-09-01", "2022-10-01", "2022-11-01", "2022-12-01", "2023-01-01", "2023-02-01", "2023-03-01", "2023-04-01", "2023-05-01", "2023-06-01", "2023-07-01", "2023-08-01", "2023-09-01", "2023-10-01", "2023-11-01", "2023-12-01", "2024-01-01", "2024-02-01", "2024-03-01", "2024-04-01", "2024-05-01", "2024-06-01", "2024-07-01", "2024-08-01", "2024-09-01", "2024-10-01", "2024-11-01", "2024-12-01", "2025-01-01", "2025-02-01", "2025-03-01", "2025-04-01", "2025-05-01", "2025-06-01", "2025-07-01", "2025-08-01", "2025-09-01", "2025-10-01", "2025-11-01", "2025-12-01", "2026-01-01", "2026-02-01", "2026-03-01", "2026-04-01", "2026-05-01", "2026-06-01", "2026-07-01", "2026-08-01", "2026-09-01"], "y": [0.9769, 0.8977, 0.7421, 0.8313, 0.871, 0.881, 0.9488, 1.0387, 1.0249, 0.9838, 1.134, 1.2146, 1.213, 1.2621, 1.3253, 1.3637, 1.4237, 1.4183, 1.4442, 1.4801, 1.4524, 1.5497, 1.4983, 1.609, 1.5534, 1.5721, 1.6512, 1.5961, 1.5696, 1.4286, 1.5543, 1.5357, 1.3925, 1.5158, 1.6237, 1.5136, 1.6156, 1.604, 1.6113, 1.6098, 1.5567, 1.711, 1.7749, 1.7375, 1.6978, 1.6054, 1.7396, 1.8245, 1.8002, 1.8576, 1.8928, 1.8388, 1.8874, 1.8778, 1.949, 1.9879, 2.0453, 2.0084, 2.1566, 2.0192, 2.0457, 2.0182, 1.9598, 1.944, 2.0248, 2.0384, 2.0313, 2.1214, 2.1754, 2.1412, 2.1905, 2.2237, 2.3623, 2.446, 2.3302, 2.3942, 2.4161, 2.4639, 2.3972, 2.5042, 2.3552], "visible": true, "name": "1/N (Sharpe 0.64)", "line": {"color": "#222222", "width": 2}}, {"type": "scatter", "mode": "lines", "x": ["2020-01-01", "2020-02-01", "2020-03-01", "2020-04-01", "2020-05-01", "2020-06-01", "2020-07-01", "2020-08-01", "2020-09-01", "2020-10-01", "2020-11-01", "2020-12-01", "2021-01-01", "2021-02-01", "2021-03-01", "2021-04-01", "2021-05-01", "2021-06-01", "2021-07-01", "2021-08-01", "2021-09-01", "2021-10-01", "2021-11-01", "2021-12-01", "2022-01-01", "2022-02-01", "2022-03-01", "2022-04-01", "2022-05-01", "2022-06-01", "2022-07-01", "2022-08-01", "2022-09-01", "2022-10-01", "2022-11-01", "2022-12-01", "2023-01-01", "2023-02-01", "2023-03-01", "2023-04-01", "2023-05-01", "2023-06-01", "2023-07-01", "2023-08-01", "2023-09-01", "2023-10-01", "2023-11-01", "2023-12-01", "2024-01-01", "2024-02-01", "2024-03-01", "2024-04-01", "2024-05-01", "2024-06-01", "2024-07-01", "2024-08-01", "2024-09-01", "2024-10-01", "2024-11-01", "2024-12-01", "2025-01-01", "2025-02-01", "2025-03-01", "2025-04-01", "2025-05-01", "2025-06-01", "2025-07-01", "2025-08-01", "2025-09-01", "2025-10-01", "2025-11-01", "2025-12-01", "2026-01-01", "2026-02-01", "2026-03-01", "2026-04-01", "2026-05-01", "2026-06-01", "2026-07-01", "2026-08-01", "2026-09-01"], "y": [1.0188, 0.9292, 0.8305, 0.8902, 0.9012, 0.8808, 0.9256, 0.9606, 0.9547, 0.928, 1.0004, 1.0234, 0.9602, 0.9874, 1.0466, 1.0802, 1.1139, 1.0966, 1.1239, 1.1268, 1.0951, 1.1059, 1.0676, 1.1843, 1.1728, 1.1882, 1.2027, 1.2172, 1.1758, 1.1639, 1.2053, 1.1905, 1.1044, 1.2218, 1.2979, 1.2874, 1.2507, 1.2284, 1.2944, 1.3628, 1.2845, 1.3036, 1.3264, 1.2916, 1.2415, 1.2322, 1.2874, 1.3077, 1.355, 1.3946, 1.4353, 1.424, 1.405, 1.3882, 1.3888, 1.4685, 1.4754, 1.4016, 1.4409, 1.3606, 1.3558, 1.4418, 1.4477, 1.4198, 1.4135, 1.405, 1.3864, 1.4082, 1.3618, 1.3513, 1.4041, 1.3829, 1.447, 1.5563, 1.4022, 1.4296, 1.4198, 1.4633, 1.5155, 1.5305, 1.4363], "visible": true, "name": "GMV muestral (Sharpe 0.25)", "line": {"color": "#2ca02c", "width": 2}}, {"type": "scatter", "mode": "lines", "x": ["2020-01-01", "2020-02-01", "2020-03-01", "2020-04-01", "2020-05-01", "2020-06-01", "2020-07-01", "2020-08-01", "2020-09-01", "2020-10-01", "2020-11-01", "2020-12-01", "2021-01-01", "2021-02-01", "2021-03-01", "2021-04-01", "2021-05-01", "2021-06-01", "2021-07-01", "2021-08-01", "2021-09-01", "2021-10-01", "2021-11-01", "2021-12-01", "2022-01-01", "2022-02-01", "2022-03-01", "2022-04-01", "2022-05-01", "2022-06-01", "2022-07-01", "2022-08-01", "2022-09-01", "2022-10-01", "2022-11-01", "2022-12-01", "2023-01-01", "2023-02-01", "2023-03-01", "2023-04-01", "2023-05-01", "2023-06-01", "2023-07-01", "2023-08-01", "2023-09-01", "2023-10-01", "2023-11-01", "2023-12-01", "2024-01-01", "2024-02-01", "2024-03-01", "2024-04-01", "2024-05-01", "2024-06-01", "2024-07-01", "2024-08-01", "2024-09-01", "2024-10-01", "2024-11-01", "2024-12-01", "2025-01-01", "2025-02-01", "2025-03-01", "2025-04-01", "2025-05-01", "2025-06-01", "2025-07-01", "2025-08-01", "2025-09-01", "2025-10-01", "2025-11-01", "2025-12-01", "2026-01-01", "2026-02-01", "2026-03-01", "2026-04-01", "2026-05-01", "2026-06-01", "2026-07-01", "2026-08-01", "2026-09-01"], "y": [1.0064, 0.9194, 0.8608, 0.9506, 0.9322, 0.9199, 0.9806, 1.0357, 1.0408, 1.0773, 1.0721, 1.0404, 0.9376, 0.9792, 1.0832, 1.1349, 1.1062, 1.0845, 1.1261, 1.1131, 0.9993, 0.989, 0.9694, 1.1111, 1.0989, 1.0148, 0.972, 1.0188, 1.0833, 1.0337, 1.0627, 1.0581, 0.9914, 1.1542, 1.1738, 1.207, 1.1969, 1.1777, 1.2571, 1.2996, 1.1767, 1.2493, 1.2958, 1.1318, 1.0638, 1.0116, 1.0716, 1.1141, 1.1051, 1.1766, 1.265, 1.2645, 1.144, 1.1553, 1.1441, 1.2182, 1.2942, 1.2873, 1.2822, 1.1759, 1.237, 1.4117, 1.3618, 1.3058, 1.3598, 1.4193, 1.4104, 1.3445, 1.281, 1.3243, 1.4313, 1.4092, 1.6159, 1.8887, 1.5013, 1.7187, 1.752, 2.1257, 1.9138, 1.8419, 1.8068], "visible": true, "name": "Tangente muestral (Sharpe 0.36)", "line": {"color": "#d62728", "width": 2}}, {"type": "scatter", "mode": "lines", "x": ["2020-01-01", "2020-02-01", "2020-03-01", "2020-04-01", "2020-05-01", "2020-06-01", "2020-07-01", "2020-08-01", "2020-09-01", "2020-10-01", "2020-11-01", "2020-12-01", "2021-01-01", "2021-02-01", "2021-03-01", "2021-04-01", "2021-05-01", "2021-06-01", "2021-07-01", "2021-08-01", "2021-09-01", "2021-10-01", "2021-11-01", "2021-12-01", "2022-01-01", "2022-02-01", "2022-03-01", "2022-04-01", "2022-05-01", "2022-06-01", "2022-07-01", "2022-08-01", "2022-09-01", "2022-10-01", "2022-11-01", "2022-12-01", "2023-01-01", "2023-02-01", "2023-03-01", "2023-04-01", "2023-05-01", "2023-06-01", "2023-07-01", "2023-08-01", "2023-09-01", "2023-10-01", "2023-11-01", "2023-12-01", "2024-01-01", "2024-02-01", "2024-03-01", "2024-04-01", "2024-05-01", "2024-06-01", "2024-07-01", "2024-08-01", "2024-09-01", "2024-10-01", "2024-11-01", "2024-12-01", "2025-01-01", "2025-02-01", "2025-03-01", "2025-04-01", "2025-05-01", "2025-06-01", "2025-07-01", "2025-08-01", "2025-09-01", "2025-10-01", "2025-11-01", "2025-12-01", "2026-01-01", "2026-02-01", "2026-03-01", "2026-04-01", "2026-05-01", "2026-06-01", "2026-07-01", "2026-08-01", "2026-09-01"], "y": [1.0128, 0.9238, 0.8218, 0.8859, 0.8988, 0.8795, 0.9236, 0.956, 0.9517, 0.9243, 0.9985, 1.0227, 0.9603, 0.9877, 1.0494, 1.0833, 1.1172, 1.0994, 1.1266, 1.1289, 1.096, 1.1084, 1.073, 1.1887, 1.1716, 1.1803, 1.193, 1.2074, 1.1711, 1.1488, 1.1901, 1.1757, 1.0875, 1.2014, 1.2821, 1.27, 1.2412, 1.2155, 1.2737, 1.3418, 1.2602, 1.2864, 1.3109, 1.2763, 1.2246, 1.2136, 1.2693, 1.2909, 1.3333, 1.3694, 1.4121, 1.3952, 1.3839, 1.364, 1.3693, 1.4449, 1.4515, 1.386, 1.4216, 1.3344, 1.3318, 1.4117, 1.412, 1.3795, 1.3732, 1.365, 1.3479, 1.3755, 1.3192, 1.3027, 1.3533, 1.3341, 1.3997, 1.5047, 1.3649, 1.3905, 1.3696, 1.4001, 1.4522, 1.4644, 1.372], "visible": true, "name": "GMV Ledoit-Wolf (Sharpe 0.20)", "line": {"color": "#e5736b", "width": 2}}, {"type": "scatter", "mode": "lines", "x": ["2020-01-01", "2020-02-01", "2020-03-01", "2020-04-01", "2020-05-01", "2020-06-01", "2020-07-01", "2020-08-01", "2020-09-01", "2020-10-01", "2020-11-01", "2020-12-01", "2021-01-01", "2021-02-01", "2021-03-01", "2021-04-01", "2021-05-01", "2021-06-01", "2021-07-01", "2021-08-01", "2021-09-01", "2021-10-01", "2021-11-01", "2021-12-01", "2022-01-01", "2022-02-01", "2022-03-01", "2022-04-01", "2022-05-01", "2022-06-01", "2022-07-01", "2022-08-01", "2022-09-01", "2022-10-01", "2022-11-01", "2022-12-01", "2023-01-01", "2023-02-01", "2023-03-01", "2023-04-01", "2023-05-01", "2023-06-01", "2023-07-01", "2023-08-01", "2023-09-01", "2023-10-01", "2023-11-01", "2023-12-01", "2024-01-01", "2024-02-01", "2024-03-01", "2024-04-01", "2024-05-01", "2024-06-01", "2024-07-01", "2024-08-01", "2024-09-01", "2024-10-01", "2024-11-01", "2024-12-01", "2025-01-01", "2025-02-01", "2025-03-01", "2025-04-01", "2025-05-01", "2025-06-01", "2025-07-01", "2025-08-01", "2025-09-01", "2025-10-01", "2025-11-01", "2025-12-01", "2026-01-01", "2026-02-01", "2026-03-01", "2026-04-01", "2026-05-01", "2026-06-01", "2026-07-01", "2026-08-01", "2026-09-01"], "y": [1.008, 0.9085, 0.8067, 0.8824, 0.8997, 0.8639, 0.8905, 0.8809, 0.9039, 0.8816, 0.9245, 0.9246, 0.8434, 0.8538, 0.8987, 0.9307, 0.9776, 0.9457, 0.9786, 0.972, 0.9513, 0.9526, 0.9279, 1.0418, 1.0023, 1.0191, 1.0279, 1.0617, 1.0265, 1.0429, 1.0559, 1.0523, 0.9776, 1.08, 1.172, 1.1744, 1.1036, 1.07, 1.1317, 1.2135, 1.1126, 1.1023, 1.1266, 1.0919, 1.0459, 1.0526, 1.0899, 1.1059, 1.1677, 1.1892, 1.2307, 1.1986, 1.1672, 1.1211, 1.0877, 1.1436, 1.1449, 1.0516, 1.0455, 0.9628, 0.9362, 0.9824, 0.9754, 0.9171, 0.8786, 0.8682, 0.8725, 0.8913, 0.8149, 0.8216, 0.8487, 0.8228, 0.8602, 0.9358, 0.8548, 0.8603, 0.8118, 0.8076, 0.8646, 0.8807, 0.7927], "visible": true, "name": "GMV PCA (Sharpe -0.27)", "line": {"color": "#9467bd", "width": 2}}, {"type": "scatter", "mode": "lines", "x": ["2020-01-01", "2020-02-01", "2020-03-01", "2020-04-01", "2020-05-01", "2020-06-01", "2020-07-01", "2020-08-01", "2020-09-01", "2020-10-01", "2020-11-01", "2020-12-01", "2021-01-01", "2021-02-01", "2021-03-01", "2021-04-01", "2021-05-01", "2021-06-01", "2021-07-01", "2021-08-01", "2021-09-01", "2021-10-01", "2021-11-01", "2021-12-01", "2022-01-01", "2022-02-01", "2022-03-01", "2022-04-01", "2022-05-01", "2022-06-01", "2022-07-01", "2022-08-01", "2022-09-01", "2022-10-01", "2022-11-01", "2022-12-01", "2023-01-01", "2023-02-01", "2023-03-01", "2023-04-01", "2023-05-01", "2023-06-01", "2023-07-01", "2023-08-01", "2023-09-01", "2023-10-01", "2023-11-01", "2023-12-01", "2024-01-01", "2024-02-01", "2024-03-01", "2024-04-01", "2024-05-01", "2024-06-01", "2024-07-01", "2024-08-01", "2024-09-01", "2024-10-01", "2024-11-01", "2024-12-01", "2025-01-01", "2025-02-01", "2025-03-01", "2025-04-01", "2025-05-01", "2025-06-01", "2025-07-01", "2025-08-01", "2025-09-01", "2025-10-01", "2025-11-01", "2025-12-01", "2026-01-01", "2026-02-01", "2026-03-01", "2026-04-01", "2026-05-01", "2026-06-01", "2026-07-01", "2026-08-01", "2026-09-01"], "y": [0.9977, 0.9164, 0.7822, 0.8716, 0.8803, 0.868, 0.918, 0.9929, 0.9651, 0.9346, 1.028, 1.0856, 1.0427, 1.0994, 1.1772, 1.2201, 1.2247, 1.2273, 1.2652, 1.2725, 1.2294, 1.2379, 1.1944, 1.3125, 1.2934, 1.2724, 1.2685, 1.2715, 1.2685, 1.164, 1.2405, 1.2265, 1.1319, 1.2559, 1.3247, 1.2845, 1.3466, 1.3134, 1.3438, 1.4052, 1.3183, 1.3984, 1.432, 1.3694, 1.3171, 1.2787, 1.3564, 1.3962, 1.386, 1.4237, 1.4658, 1.4583, 1.4641, 1.4677, 1.5177, 1.6057, 1.6438, 1.6768, 1.7407, 1.6369, 1.6908, 1.8149, 1.7819, 1.7787, 1.8327, 1.8512, 1.7968, 1.8386, 1.7651, 1.6671, 1.7749, 1.7895, 1.9052, 2.03, 1.8662, 1.9387, 1.9191, 1.9589, 1.9915, 1.9831, 1.8838], "visible": true, "name": "Tangente sin corto (Sharpe 0.48)", "line": {"color": "#e8833a", "width": 2}}, {"type": "scatter", "mode": "lines", "x": ["2020-01-01", "2020-02-01", "2020-03-01", "2020-04-01", "2020-05-01", "2020-06-01", "2020-07-01", "2020-08-01", "2020-09-01", "2020-10-01", "2020-11-01", "2020-12-01", "2021-01-01", "2021-02-01", "2021-03-01", "2021-04-01", "2021-05-01", "2021-06-01", "2021-07-01", "2021-08-01", "2021-09-01", "2021-10-01", "2021-11-01", "2021-12-01", "2022-01-01", "2022-02-01", "2022-03-01", "2022-04-01", "2022-05-01", "2022-06-01", "2022-07-01", "2022-08-01", "2022-09-01", "2022-10-01", "2022-11-01", "2022-12-01", "2023-01-01", "2023-02-01", "2023-03-01", "2023-04-01", "2023-05-01", "2023-06-01", "2023-07-01", "2023-08-01", "2023-09-01", "2023-10-01", "2023-11-01", "2023-12-01", "2024-01-01", "2024-02-01", "2024-03-01", "2024-04-01", "2024-05-01", "2024-06-01", "2024-07-01", "2024-08-01", "2024-09-01", "2024-10-01", "2024-11-01", "2024-12-01", "2025-01-01", "2025-02-01", "2025-03-01", "2025-04-01", "2025-05-01", "2025-06-01", "2025-07-01", "2025-08-01", "2025-09-01", "2025-10-01", "2025-11-01", "2025-12-01", "2026-01-01", "2026-02-01", "2026-03-01", "2026-04-01", "2026-05-01", "2026-06-01", "2026-07-01", "2026-08-01", "2026-09-01"], "y": [0.9769, 0.8977, 0.7421, 0.8313, 0.871, 0.881, 0.9488, 1.0387, 1.0249, 0.9838, 1.134, 1.2146, 1.213, 1.2621, 1.3253, 1.3637, 1.4237, 1.4183, 1.4442, 1.4801, 1.4524, 1.5497, 1.4983, 1.609, 1.5534, 1.5721, 1.6512, 1.5961, 1.5696, 1.4286, 1.5543, 1.5357, 1.3925, 1.5158, 1.6237, 1.5136, 1.6156, 1.604, 1.6113, 1.6098, 1.5567, 1.711, 1.7749, 1.7375, 1.6978, 1.6054, 1.7396, 1.8245, 1.8002, 1.8576, 1.8928, 1.8388, 1.8874, 1.8778, 1.949, 1.9879, 2.0453, 2.0084, 2.1566, 2.0192, 2.0457, 2.0182, 1.9598, 1.944, 2.0248, 2.0384, 2.0313, 2.1214, 2.1754, 2.1412, 2.1905, 2.2237, 2.3623, 2.446, 2.3302, 2.3942, 2.4161, 2.4639, 2.3972, 2.5042, 2.3552], "visible": false, "name": "1/N (Sharpe 0.64)", "line": {"color": "#222222", "width": 2}}, {"type": "scatter", "mode": "lines", "x": ["2020-01-01", "2020-02-01", "2020-03-01", "2020-04-01", "2020-05-01", "2020-06-01", "2020-07-01", "2020-08-01", "2020-09-01", "2020-10-01", "2020-11-01", "2020-12-01", "2021-01-01", "2021-02-01", "2021-03-01", "2021-04-01", "2021-05-01", "2021-06-01", "2021-07-01", "2021-08-01", "2021-09-01", "2021-10-01", "2021-11-01", "2021-12-01", "2022-01-01", "2022-02-01", "2022-03-01", "2022-04-01", "2022-05-01", "2022-06-01", "2022-07-01", "2022-08-01", "2022-09-01", "2022-10-01", "2022-11-01", "2022-12-01", "2023-01-01", "2023-02-01", "2023-03-01", "2023-04-01", "2023-05-01", "2023-06-01", "2023-07-01", "2023-08-01", "2023-09-01", "2023-10-01", "2023-11-01", "2023-12-01", "2024-01-01", "2024-02-01", "2024-03-01", "2024-04-01", "2024-05-01", "2024-06-01", "2024-07-01", "2024-08-01", "2024-09-01", "2024-10-01", "2024-11-01", "2024-12-01", "2025-01-01", "2025-02-01", "2025-03-01", "2025-04-01", "2025-05-01", "2025-06-01", "2025-07-01", "2025-08-01", "2025-09-01", "2025-10-01", "2025-11-01", "2025-12-01", "2026-01-01", "2026-02-01", "2026-03-01", "2026-04-01", "2026-05-01", "2026-06-01", "2026-07-01", "2026-08-01", "2026-09-01"], "y": [1.0291, 0.9377, 0.8052, 0.9134, 0.9141, 0.9062, 0.9713, 1.0874, 1.07, 1.0465, 1.1435, 1.1925, 1.1099, 1.1498, 1.2322, 1.2687, 1.3185, 1.287, 1.3394, 1.3564, 1.2725, 1.2487, 1.2152, 1.364, 1.3646, 1.3709, 1.3635, 1.3894, 1.3563, 1.2982, 1.3231, 1.2857, 1.2027, 1.335, 1.4286, 1.4702, 1.374, 1.3346, 1.4274, 1.5393, 1.4237, 1.4438, 1.3921, 1.4291, 1.3589, 1.4031, 1.418, 1.3736, 1.409, 1.4377, 1.4921, 1.5265, 1.545, 1.521, 1.5907, 1.687, 1.682, 1.557, 1.6302, 1.5879, 1.5711, 1.658, 1.7279, 1.7459, 1.7577, 1.7225, 1.7045, 1.7115, 1.7479, 1.7562, 1.8184, 1.7742, 1.8977, 1.9869, 1.857, 1.8964, 1.8693, 1.8894, 1.8854, 1.9253, 1.853], "visible": false, "name": "GMV muestral (Sharpe 0.45)", "line": {"color": "#2ca02c", "width": 2}}, {"type": "scatter", "mode": "lines", "x": ["2020-01-01", "2020-02-01", "2020-03-01", "2020-04-01", "2020-05-01", "2020-06-01", "2020-07-01", "2020-08-01", "2020-09-01", "2020-10-01", "2020-11-01", "2020-12-01", "2021-01-01", "2021-02-01", "2021-03-01", "2021-04-01", "2021-05-01", "2021-06-01", "2021-07-01", "2021-08-01", "2021-09-01", "2021-10-01", "2021-11-01", "2021-12-01", "2022-01-01", "2022-02-01", "2022-03-01", "2022-04-01", "2022-05-01", "2022-06-01", "2022-07-01", "2022-08-01", "2022-09-01", "2022-10-01", "2022-11-01", "2022-12-01", "2023-01-01", "2023-02-01", "2023-03-01", "2023-04-01", "2023-05-01", "2023-06-01", "2023-07-01", "2023-08-01", "2023-09-01", "2023-10-01", "2023-11-01", "2023-12-01", "2024-01-01", "2024-02-01", "2024-03-01", "2024-04-01", "2024-05-01", "2024-06-01", "2024-07-01", "2024-08-01", "2024-09-01", "2024-10-01", "2024-11-01", "2024-12-01", "2025-01-01", "2025-02-01", "2025-03-01", "2025-04-01", "2025-05-01", "2025-06-01", "2025-07-01", "2025-08-01", "2025-09-01", "2025-10-01", "2025-11-01", "2025-12-01", "2026-01-01", "2026-02-01", "2026-03-01", "2026-04-01", "2026-05-01", "2026-06-01", "2026-07-01", "2026-08-01", "2026-09-01"], "y": [1.0152, 0.9255, 0.7964, 0.8944, 0.9039, 0.8945, 0.9529, 1.0406, 1.0295, 0.9985, 1.0956, 1.144, 1.0624, 1.1006, 1.193, 1.2319, 1.2731, 1.2407, 1.2706, 1.2723, 1.1994, 1.1873, 1.1548, 1.2902, 1.2785, 1.2653, 1.2665, 1.2942, 1.2797, 1.2235, 1.2592, 1.2368, 1.1438, 1.2689, 1.3572, 1.3619, 1.3122, 1.2838, 1.3485, 1.4283, 1.3298, 1.3637, 1.368, 1.3398, 1.2795, 1.2715, 1.3125, 1.3105, 1.329, 1.3494, 1.4016, 1.4094, 1.4218, 1.4005, 1.4608, 1.5411, 1.5394, 1.4764, 1.5206, 1.4486, 1.4452, 1.5349, 1.5689, 1.5599, 1.5653, 1.5336, 1.5109, 1.5481, 1.5106, 1.4819, 1.5378, 1.5117, 1.5963, 1.6768, 1.5552, 1.5758, 1.5642, 1.5663, 1.5756, 1.6182, 1.5381], "visible": false, "name": "GMV Ledoit-Wolf (Sharpe 0.30)", "line": {"color": "#e5736b", "width": 2}}, {"type": "scatter", "mode": "lines", "x": ["2020-01-01", "2020-02-01", "2020-03-01", "2020-04-01", "2020-05-01", "2020-06-01", "2020-07-01", "2020-08-01", "2020-09-01", "2020-10-01", "2020-11-01", "2020-12-01", "2021-01-01", "2021-02-01", "2021-03-01", "2021-04-01", "2021-05-01", "2021-06-01", "2021-07-01", "2021-08-01", "2021-09-01", "2021-10-01", "2021-11-01", "2021-12-01", "2022-01-01", "2022-02-01", "2022-03-01", "2022-04-01", "2022-05-01", "2022-06-01", "2022-07-01", "2022-08-01", "2022-09-01", "2022-10-01", "2022-11-01", "2022-12-01", "2023-01-01", "2023-02-01", "2023-03-01", "2023-04-01", "2023-05-01", "2023-06-01", "2023-07-01", "2023-08-01", "2023-09-01", "2023-10-01", "2023-11-01", "2023-12-01", "2024-01-01", "2024-02-01", "2024-03-01", "2024-04-01", "2024-05-01", "2024-06-01", "2024-07-01", "2024-08-01", "2024-09-01", "2024-10-01", "2024-11-01", "2024-12-01", "2025-01-01", "2025-02-01", "2025-03-01", "2025-04-01", "2025-05-01", "2025-06-01", "2025-07-01", "2025-08-01", "2025-09-01", "2025-10-01", "2025-11-01", "2025-12-01", "2026-01-01", "2026-02-01", "2026-03-01", "2026-04-01", "2026-05-01", "2026-06-01", "2026-07-01", "2026-08-01", "2026-09-01"], "y": [1.0787, 1.0255, 0.8697, 1.1053, 1.0624, 1.1267, 1.255, 1.511, 1.4864, 1.623, 1.7273, 1.7235, 1.7333, 1.6463, 1.6068, 1.5754, 1.3319, 1.5201, 1.8298, 1.8728, 1.6568, 1.9892, 2.3963, 2.6573, 1.9132, 1.5218, 1.541, 1.3784, 1.2412, 1.4338, 1.7438, 1.6298, 1.5939, 1.8, 1.6704, 1.5195, 1.3827, 1.5344, 1.8522, 1.6459, 1.626, 1.9119, 1.9007, 1.8307, 1.9031, 1.7695, 1.9199, 1.9391, 2.2137, 2.473, 2.5394, 2.8474, 2.4803, 2.7375, 2.4051, 2.311, 2.5921, 2.0866, 2.638, 2.7881, 3.1027, 3.0878, 3.4352, 4.1446, 5.2082, 5.321, 5.5399, 4.8981, 7.9069, 9.0209, 8.9824, 9.8703, 10.8527, 10.9925, 9.4847, 10.0778, 11.9513, 15.1953, 10.7511, 11.3793, 12.9335], "visible": false, "name": "Tangente muestral (Sharpe 0.96)", "line": {"color": "#d62728", "width": 2}}, {"type": "scatter", "mode": "lines", "x": ["2020-01-01", "2020-02-01", "2020-03-01", "2020-04-01", "2020-05-01", "2020-06-01", "2020-07-01", "2020-08-01", "2020-09-01", "2020-10-01", "2020-11-01", "2020-12-01", "2021-01-01", "2021-02-01", "2021-03-01", "2021-04-01", "2021-05-01", "2021-06-01", "2021-07-01", "2021-08-01", "2021-09-01", "2021-10-01", "2021-11-01", "2021-12-01", "2022-01-01", "2022-02-01", "2022-03-01", "2022-04-01", "2022-05-01", "2022-06-01", "2022-07-01", "2022-08-01", "2022-09-01", "2022-10-01", "2022-11-01", "2022-12-01", "2023-01-01", "2023-02-01", "2023-03-01", "2023-04-01", "2023-05-01", "2023-06-01", "2023-07-01", "2023-08-01", "2023-09-01", "2023-10-01", "2023-11-01", "2023-12-01", "2024-01-01", "2024-02-01", "2024-03-01", "2024-04-01", "2024-05-01", "2024-06-01", "2024-07-01", "2024-08-01", "2024-09-01", "2024-10-01", "2024-11-01", "2024-12-01", "2025-01-01", "2025-02-01", "2025-03-01", "2025-04-01", "2025-05-01", "2025-06-01", "2025-07-01", "2025-08-01", "2025-09-01", "2025-10-01", "2025-11-01", "2025-12-01", "2026-01-01", "2026-02-01", "2026-03-01", "2026-04-01", "2026-05-01", "2026-06-01", "2026-07-01", "2026-08-01", "2026-09-01"], "y": [1.0172, 0.9254, 0.7417, 0.8694, 0.8893, 0.8728, 0.9126, 1.0079, 1.0021, 0.986, 1.0961, 1.1384, 1.1166, 1.153, 1.2321, 1.2571, 1.2641, 1.2595, 1.2899, 1.2974, 1.2368, 1.3143, 1.3294, 1.433, 1.3352, 1.2703, 1.2945, 1.2477, 1.1883, 1.1143, 1.2075, 1.1677, 1.0557, 1.1074, 1.1709, 1.0995, 1.1535, 1.1538, 1.1863, 1.1854, 1.1174, 1.2484, 1.2716, 1.2522, 1.2307, 1.1794, 1.2733, 1.2958, 1.2625, 1.3132, 1.3303, 1.2922, 1.3112, 1.315, 1.3564, 1.3288, 1.4062, 1.3503, 1.5035, 1.4238, 1.4207, 1.3325, 1.3107, 1.3604, 1.4682, 1.4535, 1.4623, 1.5756, 1.7775, 1.7171, 1.739, 1.8372, 1.9814, 1.9656, 1.9451, 1.9135, 1.9955, 1.951, 1.8894, 2.1314, 1.9939], "visible": false, "name": "Tangente sin corto (Sharpe 0.47)", "line": {"color": "#e8833a", "width": 2}}], "layout": {"title": {"text": "Valor de 1 peso invertido en enero de 2020 (pesos fijos)", "x": 0.01, "xanchor": "left", "y": 0.985, "yanchor": "top"}, "xaxis": {"title": "Mes (periodo de prueba)"}, "yaxis": {"title": "Valor del portafolio (pesos, escala log)", "type": "log"}, "updatemenus": [{"type": "buttons", "direction": "right", "buttons": [{"method": "update", "label": "Pesos fijos", "args": [{"visible": [true, true, true, true, true, true, false, false, false, false, false]}, {"title.text": "Valor de 1 peso invertido en enero de 2020 (pesos fijos)"}]}, {"method": "update", "label": "Reestimación anual", "args": [{"visible": [false, false, false, false, false, false, true, true, true, true, true]}, {"title.text": "Valor de 1 peso invertido en enero de 2020 (reestimación anual)"}]}], "active": 0, "x": 0, "y": 1.02, "xanchor": "left", "yanchor": "bottom"}], "legend": {"orientation": "h", "y": -0.25}, "margin": {"t": 125}, "height": 500}});
+
+// Gráfica 4.3 Sharpe dentro vs. fuera de muestra (se dibuja en el div con id g10)
+FIGURAS.push({"data": [{"type": "bar", "name": "Entrenamiento 2000-2019 (dentro de muestra)", "x": ["1/N", "GMV muestral", "Tangente muestral", "GMV Ledoit-Wolf", "GMV PCA", "Tangente sin corto"], "y": [0.522, 0.644, 1.187, 0.66, 0.421, 0.908], "marker_color": "#f2b8b5", "text": ["0.52", "0.64", "1.19", "0.66", "0.42", "0.91"], "textposition": "outside"}, {"type": "bar", "name": "Prueba 2020-2026 (fuera de muestra)", "x": ["1/N", "GMV muestral", "Tangente muestral", "GMV Ledoit-Wolf", "GMV PCA", "Tangente sin corto"], "y": [0.636, 0.25, 0.362, 0.203, -0.269, 0.477], "marker_color": "#7f1d1d", "text": ["0.64", "0.25", "0.36", "0.20", "-0.27", "0.48"], "textposition": "outside"}], "layout": {"title": {"text": "Sharpe anual de cada estrategia: dentro vs. fuera de muestra (pesos fijos)", "x": 0.01, "xanchor": "left", "y": 0.985, "yanchor": "top"}, "barmode": "group", "xaxis": {"title": "Estrategia"}, "yaxis": {"title": "Razón de Sharpe anual", "range": [-0.5, 1.4]}, "legend": {"orientation": "h", "y": -0.2}, "height": 500}});
+
+// Diseño que comparten todas las gráficas
+const BASE = {
+  font: { family: "Inter, system-ui, sans-serif", size: 13, color: "#1d2330" },
+  paper_bgcolor: "#fff",
+  plot_bgcolor: "#fff",
+  hovermode: "closest",
+  margin: { l: 70, r: 20 },
+};
+
+// Dibuja cada gráfica en su div: g0, g1, g2, ...
+FIGURAS.forEach((fig, i) => {
+  const layout = Object.assign({}, BASE, fig.layout);
+  layout.margin = Object.assign({}, BASE.margin, fig.layout.margin || {});
+  Plotly.newPlot("g" + i, fig.data, layout, { responsive: true, displaylogo: false });
+});
+</script>
+</body>
+</html>
